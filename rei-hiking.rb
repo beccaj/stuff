@@ -8,13 +8,13 @@ require 'set'
 require 'csv'
 
 class Destination
-  attr_accessor :link, :name, :length, :city, :skill_level, :season, :trailhead_elevation, :top_elevation, :austin_distance, :houston_distance
+  attr_accessor :link, :name, :length, :city, :skill_level, :season, :trailhead_elevation, :top_elevation, :austin_distance, :houston_distance, :austin_time, :houston_time
 
   include Comparable
   def <=>(other)
     result = 0
     result = compare_city(other)
-    result = difficulty(other) if result == 0
+    result = compare_difficulty(other) if result == 0
     result = self.length <=> other.length if result == 0 
     result
   end
@@ -23,21 +23,20 @@ class Destination
     (other.austin_distance + other.houston_distance) - (self.austin_distance + self.houston_distance)
   end
 
+  def compare_difficulty(other)
+    self.difficulty - other.difficulty
+  end
 
-  def difficulty(other)
+  def difficulty
     mydiff = nil
-    otherdiff = nil
     i= 0
     diffs = [["very easy", 0], ["easy to moderate", 2], ["easy",1],  ["moderate to difficult", 4], ["difficult to strenuous", 6], ["very strenuous", 9], ["moderately strenuous", 7], ["difficult to strenuous", 7], ["moderate", 3],["more challenging", 4], ["strenuous", 8], ["difficult", 5]]
 
     diffs.each do |diff| 
       mydiff = diff[1] if !mydiff and self.skill_level and self.skill_level.downcase.include? diff[0]
-      otherdiff = diff[1] if !otherdiff and other.skill_level and other.skill_level.downcase.include? diff[0]
     end
     mydiff = -1 if !mydiff
-    otherdiff = -1 if !otherdiff
-
-    mydiff - otherdiff
+    mydiff
   end
 end
 
@@ -159,12 +158,16 @@ def construct_distances
   end
 end
 
+def filter(destination)
+  destination.length > 7 or (destination.length > 4 and destination.difficulty > 1)
+end
+
 def construct_destinations
   base_url = "http://www.rei.com/"
 
   destinations = []
   files = Dir.entries(@folder).select {|f| !File.directory? f}
-  # files = files[0,20] # TODO use for testing small amount of files
+  # files = files[0,20] # TODO use for testing on small amount of files
 
   construct_distances
 
@@ -186,8 +189,12 @@ def construct_destinations
     end
     destination.houston_distance = @houston_distances[destination.city.downcase][0] ? @houston_distances[destination.city.downcase][0] : 999999999999
     destination.austin_distance = @austin_distances[destination.city.downcase][0] ? @austin_distances[destination.city.downcase][0] : 999999999999
+    destination.houston_time = @houston_distances[destination.city.downcase][1]
+    destination.austin_time = @austin_distances[destination.city.downcase][1]
 
-    destinations << destination
+    if filter(destination) # TODO this filters some of them out!
+      destinations << destination
+    end
   end
 
   destinations
@@ -208,16 +215,17 @@ def output_html(destinations, name)
       padding-bottom: 5px;
     }
   </style>
-  </head>"
-  contents << "<table>"
-  contents << "<tbody>"
+  </head>\n"
+  contents << "<table>\n"
+  contents << "<tbody>\n"
+  contents << "<tr><td>Trail Name</td><td></td><td>Skill Level</td><td>City</td><td>Distance from Austin</td><td>Distance from Houston</td></tr>\n"
   destinations.each do |d|
     contents << "<tr>"
-    contents << "<td><a href='#{d.link}'>#{d.name}</a>  </td><td>#{d.length} mi  </td><td>skill level: #{d.skill_level}  </td><td>city: #{d.city}  </td>"
-    contents << "</tr>"
+    contents << "<td><a href='#{d.link}'>#{d.name}</a>  </td><td>#{d.length} mi  </td><td>#{d.skill_level}  </td><td>#{d.city}  </td><td>#{d.austin_time}</td><td>#{d.houston_time}</td>"
+    contents << "</tr>\n"
   end
-  contents << "</tbody>"
-  contents << "</table>"
+  contents << "</tbody>\n"
+  contents << "</table>\n"
 
   File.write(filename, contents)
 
