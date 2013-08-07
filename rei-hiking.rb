@@ -8,9 +8,9 @@ require 'set'
 require 'csv'
 
 class Destination
-  attr_accessor :link, :name, :length, :city, :skill_level, :season, :trailhead_elevation, :top_elevation
-  @austin_distances = {}
-  @houston_distances = {}
+  attr_accessor :link, :name, :length, :city, :skill_level, :season, :trailhead_elevation, :top_elevation, :austin_distance, :houston_distance
+  # @austin_distances = {}
+  # @houston_distances = {}
 
   include Comparable
   def <=>(other)
@@ -22,42 +22,7 @@ class Destination
   end
 
   def compare_city(other)
-
-    # puts data["routes"][0]["legs"][0]["duration"]["value"]
-    # puts data["routes"][0]["legs"][0]["duration"]["text"]
-
-
-
-
-
-
-    # response = Net::HTTP.get_response(URI.parse(url)).body
-    # data = JSON.parse(response)
-    # puts data["routes"][0]["legs"][0]["duration"]["value"]
-    # puts data["routes"][0]["legs"][0]["duration"]["text"]
-
-
-
-
-
-
-
-
-
-
-
-
-
-    # cities = {"austin"=> 0, "houston" => 1, "missouri city" => 2, "san antonio" => 3, "galveston" => 4, "corpus christi" => 5}
-
-    # mydiff = cities[self.city.downcase] ? cities[self.city.downcase] : 10 #+ self.city.downcase.hash
-    # otherdiff = cities[other.city.downcase] ? cities[other.city.downcase] : 10 #+ other.city.downcase.hash.abs
-    # if mydiff == 10 and otherdiff == 10
-    #   return self.city <=> other.city
-    # end
-
-    # otherdiff - mydiff
-    0
+    (other.austin_distance + other.houston_distance) - (self.austin_distance + self.houston_distance)
   end
 
 
@@ -129,6 +94,7 @@ end
 def valid_data(data)
    data["routes"] and data["routes"][0] and  data["routes"][0]["legs"]and data["routes"][0]["legs"][0]["duration"] and data["routes"][0]["legs"][0]["duration"]["value"]
 end
+
 def get_google_distance(origin, destination, distances, invalid)
         line = []
 
@@ -187,16 +153,37 @@ def write_distance_csv(dests)
 
 end
 
+@austin_distances = {}
+@houston_distances = {}
+
+def construct_distances
+  CSV.foreach(@base_folder + "/distances.csv", {:headers=>true}) do |row|
+    city = row["City"]
+    austinTime = row["AustinTime"]
+    austinDist = row["AustinDist"]
+    houstonTime = row["HoustonTime"]
+    houstonDist = row["HoustonDist"]
+
+    @austin_distances[city] = [austinTime.to_i, austinDist]
+    @houston_distances[city] = [houstonTime.to_i, houstonDist]
+  # use row here...
+  end
+  # puts @austin_distances
+  # puts @houston_distances
+end
+
 def construct_destinations
   base_url = "http://www.rei.com/"
 
   destinations = []
   files = Dir.entries(@folder).select {|f| !File.directory? f}
-  # files = files[0,20] #TODO
+  # files = files[0,20] # TODO use for testing small amount of files
+
+  construct_distances
+
+
   files.each do |file|
     page = Nokogiri::HTML(File.open(@folder + file).read)
-    # link = <meta name="reiShortcut_requestUri" content="/guidepost/detail/texas/hiking/3-mile-loop/27061">
-
 
     table = page.css("table#spec_table")
     rows = table.css("tr")
@@ -210,16 +197,19 @@ def construct_destinations
       value = row.css('td').text
       parse_row(section, value, destination)
     end
+    destination.houston_distance = @houston_distances[destination.city.downcase][0] ? @houston_distances[destination.city.downcase][0] : 999999999999
+    destination.austin_distance = @austin_distances[destination.city.downcase][0] ? @austin_distances[destination.city.downcase][0] : 999999999999
 
+    # puts "#{destination.houston_distance} #{destination.austin_distance}"
     destinations << destination
   end
 
   destinations
 end
 
-def output_html(destinations)
+def output_html(destinations, name)
   destinations.sort!.reverse!# {|x,y| y.length <=> x.length}
-  filename = @base_folder + "rei-distance.html"
+  filename = @base_folder + name
   contents = ""
 
   contents << "<head>
@@ -248,7 +238,7 @@ def output_html(destinations)
 end
 
 
-# download_files
+# download_files # do this once
 destinations = construct_destinations
-write_distance_csv destinations
-output_html(destinations)
+# write_distance_csv destinations # do this once
+output_html(destinations, "rei-distance.html")
