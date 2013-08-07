@@ -3,17 +3,63 @@ require 'rubygems'
 require 'nokogiri'     
 require 'open-uri'
 require 'date'
+require 'json'
+require 'set'
+require 'csv'
 
 class Destination
   attr_accessor :link, :name, :length, :city, :skill_level, :season, :trailhead_elevation, :top_elevation
+  @austin_distances = {}
+  @houston_distances = {}
 
   include Comparable
   def <=>(other)
     result = 0
-    result = difficulty(other)
+    result = compare_city(other)
+    result = difficulty(other) if result == 0
     result = self.length <=> other.length if result == 0 
     result
   end
+
+  def compare_city(other)
+
+    # puts data["routes"][0]["legs"][0]["duration"]["value"]
+    # puts data["routes"][0]["legs"][0]["duration"]["text"]
+
+
+
+
+
+
+    # response = Net::HTTP.get_response(URI.parse(url)).body
+    # data = JSON.parse(response)
+    # puts data["routes"][0]["legs"][0]["duration"]["value"]
+    # puts data["routes"][0]["legs"][0]["duration"]["text"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # cities = {"austin"=> 0, "houston" => 1, "missouri city" => 2, "san antonio" => 3, "galveston" => 4, "corpus christi" => 5}
+
+    # mydiff = cities[self.city.downcase] ? cities[self.city.downcase] : 10 #+ self.city.downcase.hash
+    # otherdiff = cities[other.city.downcase] ? cities[other.city.downcase] : 10 #+ other.city.downcase.hash.abs
+    # if mydiff == 10 and otherdiff == 10
+    #   return self.city <=> other.city
+    # end
+
+    # otherdiff - mydiff
+    0
+  end
+
 
   def difficulty(other)
     mydiff = nil
@@ -36,6 +82,9 @@ class Destination
 end
 
 @folder = "/src/stuff/destinations/"
+@base_folder = "/src/stuff/"
+
+
 
 def parse_row(section, value, destination)
   case section
@@ -77,12 +126,73 @@ def download_files
   end
 end
 
+def valid_data(data)
+   data["routes"] and data["routes"][0] and  data["routes"][0]["legs"]and data["routes"][0]["legs"][0]["duration"] and data["routes"][0]["legs"][0]["duration"]["value"]
+end
+def get_google_distance(origin, destination, distances, invalid)
+        line = []
+
+        url = "http://maps.googleapis.com/maps/api/directions/json?origin=#{origin}&destination=#{destination}&sensor=false"
+
+        response = Net::HTTP.get_response(URI.parse(url)).body
+        data = JSON.parse(response)
+        if valid_data(data)
+          value = data["routes"][0]["legs"][0]["duration"]["value"]
+          text = data["routes"][0]["legs"][0]["duration"]["text"]
+
+          distances[destination] = [value, text]
+          line << value.to_s
+          line << text.to_s
+        else
+          line << nil
+          line << nil
+          invalid.add destination.gsub("%20", " ")
+        end
+        line
+end
+
+def write_distance_csv(dests)
+  @austin_distances = {} 
+  @houston_distances = {}
+  invalid = Set.new
+
+  origin = "austin"
+  filename = @base_folder + "distances.csv"
+  CSV.open(filename, "wb") do |csv|
+    csv << ["City","AustinTime","AustinDist","HoustonTime","HoustonDist"]
+    dests.each do |dest|
+      destination = dest.city.downcase.gsub " ", "%20"
+      destination << ",tx"
+
+      line = []
+      if !@austin_distances[destination]
+        line << dest.city.downcase
+        origin = "austin"
+        get_google_distance(origin, destination, @austin_distances, invalid).map {|i| line << i}
+      end
+      if !@houston_distances[destination]
+        origin = "houston"
+        get_google_distance(origin, destination, @houston_distances, invalid).map {|i| line << i}
+      end  
+      csv << line if line.length > 1
+      puts "Line: #{line}" if line.length > 1
+      sleep 1
+    end
+  end
+
+  # @austin_distances.keys.map {|key| puts "Austin: #{key}: #{@austin_distances[key]}"}
+  # @austin_distances.keys.map {|key| puts "Houston: #{key}: #{@houston_distances[key]}"}
+  puts "INVALID CITIES:"
+  invalid.map {|i| puts i}
+
+end
 
 def construct_destinations
   base_url = "http://www.rei.com/"
 
   destinations = []
   files = Dir.entries(@folder).select {|f| !File.directory? f}
+  # files = files[0,20] #TODO
   files.each do |file|
     page = Nokogiri::HTML(File.open(@folder + file).read)
     # link = <meta name="reiShortcut_requestUri" content="/guidepost/detail/texas/hiking/3-mile-loop/27061">
@@ -109,7 +219,10 @@ end
 
 def output_html(destinations)
   destinations.sort!.reverse!# {|x,y| y.length <=> x.length}
-  puts "<head>
+  filename = @base_folder + "rei-distance.html"
+  contents = ""
+
+  contents << "<head>
   <style>
   td {
       border-bottom-style:solid;
@@ -120,18 +233,22 @@ def output_html(destinations)
     }
   </style>
   </head>"
-  puts "<table>"
-  puts "<tbody>"
+  contents << "<table>"
+  contents << "<tbody>"
   destinations.each do |d|
-    puts "<tr>"
-    puts "<td><a href='#{d.link}'>#{d.name}</a>  </td><td>#{d.length} mi  </td><td>skill level: #{d.skill_level}  </td><td>city: #{d.city}  </td>"
-    puts "</tr>"
+    contents << "<tr>"
+    contents << "<td><a href='#{d.link}'>#{d.name}</a>  </td><td>#{d.length} mi  </td><td>skill level: #{d.skill_level}  </td><td>city: #{d.city}  </td>"
+    contents << "</tr>"
   end
-  puts "</tbody>"
-  puts "</table>"
+  contents << "</tbody>"
+  contents << "</table>"
+
+  File.write(filename, contents)
+
 end
 
 
 # download_files
 destinations = construct_destinations
+write_distance_csv destinations
 output_html(destinations)
