@@ -9,8 +9,6 @@ require 'csv'
 
 class Destination
   attr_accessor :link, :name, :length, :city, :skill_level, :season, :trailhead_elevation, :top_elevation, :austin_distance, :houston_distance
-  # @austin_distances = {}
-  # @houston_distances = {}
 
   include Comparable
   def <=>(other)
@@ -29,11 +27,8 @@ class Destination
   def difficulty(other)
     mydiff = nil
     otherdiff = nil
-    # diffs = [["easy", 0], ["moderate to difficult", 2], ["moderate", 1], ["difficult", 3],["very strenuous", 5], ["strenuous", 4]]
     i= 0
     diffs = [["very easy", 0], ["easy to moderate", 2], ["easy",1],  ["moderate to difficult", 4], ["difficult to strenuous", 6], ["very strenuous", 9], ["moderately strenuous", 7], ["difficult to strenuous", 7], ["moderate", 3],["more challenging", 4], ["strenuous", 8], ["difficult", 5]]
-    # puts diffs
-    # difflist [[]]
 
     diffs.each do |diff| 
       mydiff = diff[1] if !mydiff and self.skill_level and self.skill_level.downcase.include? diff[0]
@@ -76,13 +71,10 @@ def download_files
   base_url = "http://www.rei.com/"
   destinations = []
 
-  # items = [items[0]]
-  # items.map {|i| puts "Link: #{i}"}
-
   items.each do |item|
     link = base_url + item['href']
     puts "url: #{link}"
-    # page = Nokogiri::HTML(open(link))  
+
     page = open(link).read
     destination = item.text.downcase.gsub(/[()+ \/,:]/,"-")
     filename = @folder + destination + ".html"
@@ -96,25 +88,25 @@ def valid_data(data)
 end
 
 def get_google_distance(origin, destination, distances, invalid)
-        line = []
+  line = []
 
-        url = "http://maps.googleapis.com/maps/api/directions/json?origin=#{origin}&destination=#{destination}&sensor=false"
+  url = "http://maps.googleapis.com/maps/api/directions/json?origin=#{origin}&destination=#{destination}&sensor=false"
 
-        response = Net::HTTP.get_response(URI.parse(url)).body
-        data = JSON.parse(response)
-        if valid_data(data)
-          value = data["routes"][0]["legs"][0]["duration"]["value"]
-          text = data["routes"][0]["legs"][0]["duration"]["text"]
+  response = Net::HTTP.get_response(URI.parse(url)).body
+  data = JSON.parse(response)
+  if valid_data(data)
+    value = data["routes"][0]["legs"][0]["duration"]["value"]
+    text = data["routes"][0]["legs"][0]["duration"]["text"]
 
-          distances[destination] = [value, text]
-          line << value.to_s
-          line << text.to_s
-        else
-          line << nil
-          line << nil
-          invalid.add destination.gsub("%20", " ")
-        end
-        line
+    distances[destination] = [value, text]
+    line << value.to_s
+    line << text.to_s
+  else
+    line << nil
+    line << nil
+    invalid.add destination.gsub("%20", " ")
+  end
+  line
 end
 
 def write_distance_csv(dests)
@@ -146,8 +138,6 @@ def write_distance_csv(dests)
     end
   end
 
-  # @austin_distances.keys.map {|key| puts "Austin: #{key}: #{@austin_distances[key]}"}
-  # @austin_distances.keys.map {|key| puts "Houston: #{key}: #{@houston_distances[key]}"}
   puts "INVALID CITIES:"
   invalid.map {|i| puts i}
 
@@ -166,10 +156,7 @@ def construct_distances
 
     @austin_distances[city] = [austinTime.to_i, austinDist]
     @houston_distances[city] = [houstonTime.to_i, houstonDist]
-  # use row here...
   end
-  # puts @austin_distances
-  # puts @houston_distances
 end
 
 def construct_destinations
@@ -200,7 +187,6 @@ def construct_destinations
     destination.houston_distance = @houston_distances[destination.city.downcase][0] ? @houston_distances[destination.city.downcase][0] : 999999999999
     destination.austin_distance = @austin_distances[destination.city.downcase][0] ? @austin_distances[destination.city.downcase][0] : 999999999999
 
-    # puts "#{destination.houston_distance} #{destination.austin_distance}"
     destinations << destination
   end
 
@@ -208,7 +194,7 @@ def construct_destinations
 end
 
 def output_html(destinations, name)
-  destinations.sort!.reverse!# {|x,y| y.length <=> x.length}
+  destinations.sort!.reverse!
   filename = @base_folder + name
   contents = ""
 
