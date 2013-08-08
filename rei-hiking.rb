@@ -21,7 +21,11 @@ class Destination
   end
 
   def compare_city(other)
-    (other.austin_distance + other.houston_distance) - (self.austin_distance + self.houston_distance)
+    # (other.austin_distance + other.houston_distance) - (self.austin_distance + self.houston_distance)
+    (other.austin_distance) - (self.austin_distance)
+    # (other.houston_distance) - (self.houston_distance)
+
+
   end
 
   def compare_difficulty(other)
@@ -158,7 +162,7 @@ def write_distance_csv(dests, filename) # run once to write csv that stores dist
         origin = AUSTIN_ORIGIN
         distance = get_google_distance(origin, destination, @austin_distances, invalid)
         if distance.include? nil
-          destination = dest.city.downcase.gsub " ", "%20"
+          destination = dest.city.downcase.gsub(" ", "%20") + ",tx"
           distance = get_google_distance(origin, destination, @austin_distances, invalid)
         end
 
@@ -168,8 +172,8 @@ def write_distance_csv(dests, filename) # run once to write csv that stores dist
         origin = HOUSTON_ORIGIN # "houston"
         distance = get_google_distance(origin, destination, @houston_distances, invalid)
         if distance.include? nil
-          destination = dest.city.downcase.gsub " ", "%20"
-          get_google_distance(origin, destination, @houston_distances, invalid)
+          destination = dest.city.downcase.gsub(" ", "%20") + ",tx"
+          distance = get_google_distance(origin, destination, @houston_distances, invalid)
         end
 
         distance.map {|i| line << i}
@@ -311,6 +315,6 @@ end
 
 # download_files # do this once
 destinations = construct_destinations
-# write_distance_csv destinations, "distances-test.csv" # do this once
-# write_city_distance_csv destinations, "distances-DELETE.csv"
-output_html(destinations, "rei-distance.html")
+write_distance_csv destinations, "distances-test.csv" # do this once
+# # write_city_distance_csv destinations, "distances-DELETE.csv"
+# output_html(destinations, "rei-distance.html")

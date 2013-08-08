@@ -12,7 +12,7 @@ mariscal canyon rim trail,31947,8 hours 52 mins,39269,10 hours 54 mins,29.01606,
 town lake trail,940,16 mins,9371,2 hours 36 mins,30.25066,-97.713379
 el capitan,28235,7 hours 51 mins,35556,9 hours 53 mins,31.88618,-104.82142
 foothills,27656,7 hours 41 mins,34977,9 hours 43 mins,31.88918,-104.82142
-mesa de anguila trail,,,,,29.21083,-103.68806
+mesa de anguila trail,29211,8 hours 7 mins,36532,10 hours 9 mins,29.21083,-103.68806
 bush mountain,27647,7 hours 41 mins,34968,9 hours 43 mins,31.88705,-104.82382
 12-mile loop trail,15722,4 hours 22 mins,23111,6 hours 25 mins,29.9791,-100.87964
 dinosaur valley trail,9446,2 hours 37 mins,16262,4 hours 31 mins,32.24972,-97.8125
@@ -58,7 +58,7 @@ plains junction trail,23062,6 hours 24 mins,28135,7 hours 49 mins,34.55368,-100.
 shoal creek hike & bike trail,522,9 mins,9895,2 hours 45 mins,30.293871,-97.760483
 "enchanted rock state natural area, loop trail",6295,1 hour 45 mins,15089,4 hours 11 mins,30.49654,-98.824
 guadalupe peak trail,27727,7 hours 42 mins,35048,9 hours 44 mins,31.89221,-104.82094
-marufo vega trail,,,,,29.24333,-102.88439
+marufo vega trail,28191,7 hours 50 mins,35513,9 hours 52 mins,29.24333,-102.88439
 "south rim loop, southeast rim to pinnacles trail",27233,7 hours 34 mins,34555,9 hours 36 mins,29.26918,-103.30106
 ore terminal trail,28164,7 hours 49 mins,35486,9 hours 51 mins,29.21549,-102.95079
 sam houston national forest: stubblefield south hike trail,10567,2 hours 56 mins,5191,1 hour 27 mins,30.65281,-95.49767
@@ -82,7 +82,7 @@ george bush park: fry road to barker clodine trail,8920,2 hours 29 mins,2024,34 
 blue ridge trail,36500,10 hours 8 mins,43821,12 hours 10 mins,32.15972,-104.8892
 crockett gardens and falls,2203,37 mins,11104,3 hours 5 mins,30.66667,-97.72361
 sam houston national forest: mercy fire tower loop trail,11777,3 hours 16 mins,4611,1 hour 17 mins,30.43856,-95.12075
-strawhouse trail,,,,,29.33095,-102.94849
+strawhouse trail,28191,7 hours 50 mins,29.33095,-102.94849
 ernst basin complex trails,28618,7 hours 57 mins,35940,9 hours 59 mins,29.33194,-103.01437
 greenbelt trailway,13020,3 hours 37 mins,16503,4 hours 35 mins,33.23955,-97.04189
 inks lake state park trail,4261,1 hour 11 mins,13687,3 hours 48 mins,30.73575,-98.36992
@@ -123,7 +123,7 @@ sam houston national forest: kelly hike  trail,9458,2 hours 38 mins,5309,1 hour 
 contrabando trail,29834,8 hours 17 mins,37155,10 hours 19 mins,29.29508,-103.84509
 four c trail,12500,3 hours 28 mins,9599,2 hours 40 mins,31.4079,-95.14584
 knob hill trail,11742,3 hours 16 mins,15865,4 hours 24 mins,33.04472,-97.20722
-dominguez spring trail,,,,,29.14194,-103.29611
+dominguez spring trail,29516,8 hours 12 mins,36838,10 hours 14 mins,29.14194,-103.29611
 rancherías loop trail,29954,8 hours 19 mins,37275,10 hours 21 mins,29.33348,-104.05117
 little lake creek wilderness,9555,2 hours 39 mins,5116,1 hour 25 mins,30.47333,-95.71333
 sam houston national forest: south wilderness trail,9625,2 hours 40 mins,5141,1 hour 26 mins,30.48208,-95.6975
@@ -148,10 +148,10 @@ huntsville,10685,2 hours 58 mins,5329,1 hour 29 mins,30.60861,-95.5325
 buescher state park trail,3620,1 hour 0 mins,7081,1 hour 58 mins,30.04937,-97.16155
 nails creek unit / lakesomerville state park: flag pond loop,5515,1 hour 32 mins,7201,2 hours 0 mins,30.31766,-96.70767
 south rim via pinnacles & boot canyon trails (& emory peak),27257,7 hours 34 mins,34579,9 hours 36 mins,29.24606,-103.30333
-elephant tusk trail,,,,,29.16239,-103.28081
+elephant tusk trail,26207,7 hours 17 mins,33529,9 hours 19 mins,29.16239,-103.28081
 "hill country state natural area, comanche bluff trail",8407,2 hours 20 mins,14648,4 hours 4 mins,29.62704,-99.18097
 anthony's nose,30935,8 hours 36 mins,38257,10 hours 38 mins,31.95944,-106.49806
-the chimneys trail,,,,,29.22252,-103.47731
+the chimneys trail,29516,8 hours 12 mins,29.22252,-103.47731
 barton creek,771,13 mins,9843,2 hours 44 mins,30.26722,-97.76972
 trail between the lakes,17187,4 hours 46 mins,10491,2 hours 55 mins,31.17903,-93.97224
 black creek–cottonwood hiking trail,13669,3 hours 48 mins,18742,5 hours 12 mins,33.345,-97.595
