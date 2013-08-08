@@ -8,7 +8,7 @@ require 'set'
 require 'csv'
 
 class Destination
-  attr_accessor :link, :name, :length, :city, :skill_level, :season, :trailhead_elevation, :top_elevation, :elevation_gain, :austin_distance, :houston_distance, :austin_time, :houston_time
+  attr_accessor :lat, :lon, :link, :name, :length, :city, :skill_level, :season, :trailhead_elevation, :top_elevation, :elevation_gain, :austin_distance, :houston_distance, :austin_time, :houston_time
 
   include Comparable
   def <=>(other)
@@ -31,7 +31,6 @@ class Destination
   def gain 
     return self.elevation_gain if self.elevation_gain
     if self.top_elevation and self.trailhead_elevation
-      puts "#{self.name}: #{self.top_elevation} - #{self.trailhead_elevation} = #{self.top_elevation - self.trailhead_elevation}"
       return self.top_elevation - self.trailhead_elevation
     end
     return 0
@@ -53,7 +52,8 @@ end
 @folder = "/src/stuff/destinations/"
 @base_folder = "/src/stuff/"
 
-
+AUSTIN_ORIGIN = "1501%20W%20North%20Loop%20Blvd%20Austin%20TX"
+HOUSTON_ORIGIN = "5030%20cave%20run%20dr%2077459"
 
 
 
@@ -98,18 +98,18 @@ def get_google_distance(origin, destination, distances, invalid)
   else
     line << nil
     line << nil
-    invalid.add destination.gsub("%20", " ")
+    invalid.add destination#destination.gsub("%20", " ")
   end
   line
 end
 
-def write_distance_csv(dests) # run once to write csv that stores distances
+def write_city_distance_csv(dests, filename) # run once to write csv that stores distances
   @austin_distances = {} 
   @houston_distances = {}
   invalid = Set.new
 
   origin = "austin"
-  filename = @base_folder + "distances.csv"
+  filename = @base_folder + filename
   CSV.open(filename, "wb") do |csv|
     csv << ["City","AustinTime","AustinDist","HoustonTime","HoustonDist"]
     dests.each do |dest|
@@ -135,6 +135,58 @@ def write_distance_csv(dests) # run once to write csv that stores distances
   puts "INVALID CITIES:"
   invalid.map {|i| puts i}
 
+
+end
+
+def write_distance_csv(dests, filename) # run once to write csv that stores distances
+  @austin_distances = {} 
+  @houston_distances = {}
+  invalid = Set.new
+
+  origin = AUSTIN_ORIGIN # "austin"
+  filename = @base_folder + filename
+  CSV.open(filename, "wb") do |csv|
+    csv << ["City","AustinTime","AustinDist","HoustonTime","HoustonDist"]
+    dests.each do |dest|
+      # destination = dest.city.downcase.gsub " ", "%20"
+      # destination << ",tx"
+      destination = "#{dest.lat},#{dest.lon}"
+
+      line = []
+      if !@austin_distances[destination]
+        line << dest.name.downcase# dest.city.downcase
+        origin = AUSTIN_ORIGIN
+        distance = get_google_distance(origin, destination, @austin_distances, invalid)
+        if distance.include? nil
+          destination = dest.city.downcase.gsub " ", "%20"
+          distance = get_google_distance(origin, destination, @austin_distances, invalid)
+        end
+
+        distance.map {|i| line << i}
+      end
+      if !@houston_distances[destination]
+        origin = HOUSTON_ORIGIN # "houston"
+        distance = get_google_distance(origin, destination, @houston_distances, invalid)
+        if distance.include? nil
+          destination = dest.city.downcase.gsub " ", "%20"
+          get_google_distance(origin, destination, @houston_distances, invalid)
+        end
+
+        distance.map {|i| line << i}
+      end  
+      line << dest.lat
+      line << dest.lon
+
+
+      csv << line if line.length > 1
+      puts "Line: #{line}" if line.length > 1
+      sleep 1
+    end
+  end
+
+  puts "INVALID CITIES:"
+  invalid.map {|i| puts i}
+
 end
 
 @austin_distances = {}
@@ -145,13 +197,15 @@ end
 def construct_distances
   CSV.foreach(@base_folder + "/distances.csv", {:headers=>true}) do |row|
     city = row["City"]
-    austinTime = row["AustinTime"]
-    austinDist = row["AustinDist"]
-    houstonTime = row["HoustonTime"]
-    houstonDist = row["HoustonDist"]
+    austinTime = row["AustinTime"] ? row["AustinTime"] : 999999999
+    austinDist = row["AustinDist"] ? row["AustinDist"] : "-"
+    houstonTime = row["HoustonTime"] ? row["HoustonTime"] : 999999999
+    houstonDist = row["HoustonDist"] ? row["HoustonDist"] : "-"
 
     @austin_distances[city] = [austinTime.to_i, austinDist]
     @houston_distances[city] = [houstonTime.to_i, houstonDist]
+
+    puts "#{@austin_distances[city]}, #{@houston_distances[city]}"
   end
 end
 
@@ -183,13 +237,17 @@ def construct_destinations
 
   destinations = []
   files = Dir.entries(@folder).select {|f| !File.directory? f}
-  # files = files[0,20] # TODO use for testing on small amount of files
+  # files = files[0,5] # TODO use for testing on small amount of files
 
   construct_distances
 
 
   files.each do |file|
+    filestring = File.open(@folder + file).read
     page = Nokogiri::HTML(File.open(@folder + file).read)
+
+    lat_regex = /lat=-?(\d){,3}.(\d)*/
+    lon_regex = /lng=-?(\d){,3}.(\d)*/
 
     table = page.css("table#spec_table")
     rows = table.css("tr")
@@ -203,10 +261,13 @@ def construct_destinations
       value = row.css('td').text
       parse_row(section, value, destination)
     end
-    destination.houston_distance = @houston_distances[destination.city.downcase][0] ? @houston_distances[destination.city.downcase][0] : 999999999999
-    destination.austin_distance = @austin_distances[destination.city.downcase][0] ? @austin_distances[destination.city.downcase][0] : 999999999999
-    destination.houston_time = @houston_distances[destination.city.downcase][1]
-    destination.austin_time = @austin_distances[destination.city.downcase][1]
+    destination.houston_distance = @houston_distances[destination.name.downcase] ? @houston_distances[destination.name.downcase][0] : 999999999999
+    destination.austin_distance = @austin_distances[destination.name.downcase] ? @austin_distances[destination.name.downcase][0] : 999999999999
+    destination.houston_time = @houston_distances[destination.name.downcase] ? @houston_distances[destination.name.downcase][1] : "-"
+    destination.austin_time = @austin_distances[destination.name.downcase] ? @austin_distances[destination.name.downcase][1] : "-"
+
+    destination.lat = lat_regex.match(filestring)[0].gsub("lat=", "")
+    destination.lon = lon_regex.match(filestring)[0].gsub("lng=","")
 
     if filter(destination) # TODO this filters some of them out!
       destinations << destination
@@ -237,7 +298,7 @@ def output_html(destinations, name)
   contents << "<tr><td>Trail Name</td><td></td><td>Skill Level</td><td>City</td><td>Distance from Austin</td><td>Distance from Houston</td></tr>\n"
   destinations.each do |d|
     contents << "<tr>"
-    contents << "<td><a href='#{d.link}'>#{d.name}</a>  </td><td>#{d.length} mi  </td><td>#{d.skill_level}  </td><td>#{d.city}  </td><td>#{d.austin_time}</td><td>#{d.houston_time}</td><td>#{d.gain} ft</td>"
+    contents << "<td><a href='#{d.link}'>#{d.name}</a>  </td><td>#{d.length} mi  </td><td>#{d.skill_level}  </td><td>#{d.city}  </td><td>#{d.austin_time}</td><td>#{d.houston_time}</td><td>#{d.gain} ft</td><td>#{d.lat}</td><td>#{d.lon}</td>"
     contents << "</tr>\n"
   end
   contents << "</tbody>\n"
@@ -250,5 +311,6 @@ end
 
 # download_files # do this once
 destinations = construct_destinations
-# write_distance_csv destinations # do this once
+# write_distance_csv destinations, "distances-test.csv" # do this once
+# write_city_distance_csv destinations, "distances-DELETE.csv"
 output_html(destinations, "rei-distance.html")
