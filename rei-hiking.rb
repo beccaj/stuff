@@ -8,7 +8,7 @@ require 'set'
 require 'csv'
 
 class Destination
-  attr_accessor :link, :name, :length, :city, :skill_level, :season, :trailhead_elevation, :top_elevation, :austin_distance, :houston_distance, :austin_time, :houston_time
+  attr_accessor :link, :name, :length, :city, :skill_level, :season, :trailhead_elevation, :top_elevation, :elevation_gain, :austin_distance, :houston_distance, :austin_time, :houston_time
 
   include Comparable
   def <=>(other)
@@ -16,6 +16,7 @@ class Destination
     result = compare_city(other)
     result = compare_difficulty(other) if result == 0
     result = self.length <=> other.length if result == 0 
+    result = self.gain <=> other.gain if result == 0
     result
   end
 
@@ -25,6 +26,15 @@ class Destination
 
   def compare_difficulty(other)
     self.difficulty - other.difficulty
+  end
+
+  def gain 
+    return self.elevation_gain if self.elevation_gain
+    if self.top_elevation and self.trailhead_elevation
+      puts "#{self.name}: #{self.top_elevation} - #{self.trailhead_elevation} = #{self.top_elevation - self.trailhead_elevation}"
+      return self.top_elevation - self.trailhead_elevation
+    end
+    return 0
   end
 
   def difficulty
@@ -45,22 +55,7 @@ end
 
 
 
-def parse_row(section, value, destination)
-  case section
-  when "Nearby City"
-    destination.city = value
-  when "Length"
-    destination.length = value.gsub(" mi", "").to_f
 
-  when "Skill Level"
-    destination.skill_level = value
-  when "Trailhead Elevation"
-    destination.trailhead_elevation = value
-  when "Top Elevation"
-    destination.top_elevation = value
-  else
-  end
-end
 
 def download_files
   url = "http://www.rei.com/guidepost/list/texas/hiking/tx/7"
@@ -108,7 +103,7 @@ def get_google_distance(origin, destination, distances, invalid)
   line
 end
 
-def write_distance_csv(dests)
+def write_distance_csv(dests) # run once to write csv that stores distances
   @austin_distances = {} 
   @houston_distances = {}
   invalid = Set.new
@@ -145,6 +140,8 @@ end
 @austin_distances = {}
 @houston_distances = {}
 
+
+
 def construct_distances
   CSV.foreach(@base_folder + "/distances.csv", {:headers=>true}) do |row|
     city = row["City"]
@@ -160,6 +157,25 @@ end
 
 def filter(destination)
   destination.length > 7 or (destination.length > 4 and destination.difficulty > 1)
+end
+
+def parse_row(section, value, destination)
+  case section
+  when "Nearby City"
+    destination.city = value
+  when "Length"
+    destination.length = value.gsub(" mi", "").to_f
+
+  when "Skill Level"
+    destination.skill_level = value
+  when "Trailhead Elevation"
+    destination.trailhead_elevation = value.gsub(" ft", "").gsub(",","").to_i
+  when "Top Elevation"
+    destination.top_elevation = value.gsub(" ft", "").gsub(",","").to_i
+  when "Elevation Gain"
+    destination.elevation_gain = value.gsub(" ft", "").gsub(",","").to_i
+  else
+  end
 end
 
 def construct_destinations
@@ -221,7 +237,7 @@ def output_html(destinations, name)
   contents << "<tr><td>Trail Name</td><td></td><td>Skill Level</td><td>City</td><td>Distance from Austin</td><td>Distance from Houston</td></tr>\n"
   destinations.each do |d|
     contents << "<tr>"
-    contents << "<td><a href='#{d.link}'>#{d.name}</a>  </td><td>#{d.length} mi  </td><td>#{d.skill_level}  </td><td>#{d.city}  </td><td>#{d.austin_time}</td><td>#{d.houston_time}</td>"
+    contents << "<td><a href='#{d.link}'>#{d.name}</a>  </td><td>#{d.length} mi  </td><td>#{d.skill_level}  </td><td>#{d.city}  </td><td>#{d.austin_time}</td><td>#{d.houston_time}</td><td>#{d.gain} ft</td>"
     contents << "</tr>\n"
   end
   contents << "</tbody>\n"
