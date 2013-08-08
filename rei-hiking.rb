@@ -242,6 +242,7 @@ def construct_destinations
   destinations = []
   files = Dir.entries(@folder).select {|f| !File.directory? f}
   # files = files[0,5] # TODO use for testing on small amount of files
+  # files = ["strawhouse-trail.html","the-chimneys-trail.html"]
 
   construct_distances
 
@@ -315,6 +316,6 @@ end
 
 # download_files # do this once
 destinations = construct_destinations
-write_distance_csv destinations, "distances-test.csv" # do this once
+# write_distance_csv destinations, "distances-test.csv" # do this once
 # # write_city_distance_csv destinations, "distances-DELETE.csv"
-# output_html(destinations, "rei-distance.html")
+output_html(destinations, "rei-distance.html")
