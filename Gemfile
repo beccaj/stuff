@@ -1,7 +1,13 @@
-ruby "1.9.3"
 source 'https://rubygems.org'
+
+ruby "1.9.3"
 
 gem 'dashing'
 gem 'therubyracer'
-gem 'json'
+gem 'activeresource'
+gem 'newrelic_api'
+gem 'google-api-client'
 gem 'nokogiri'
+gem 'sanitize'
+gem 'newrelic_rpm'
+gem 'curl'

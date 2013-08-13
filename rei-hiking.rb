@@ -7,6 +7,12 @@ require 'json'
 require 'set'
 require 'csv'
 
+def filter(destination)
+  # destination.length > 10
+  destination.length > 7 or (destination.length > 4 and destination.difficulty > 1)
+end
+
+
 class Destination
   attr_accessor :lat, :lon, :link, :name, :length, :city, :skill_level, :season, :trailhead_elevation, :top_elevation, :elevation_gain, :austin_distance, :houston_distance, :austin_time, :houston_time
 
@@ -24,8 +30,6 @@ class Destination
     # (other.austin_distance + other.houston_distance) - (self.austin_distance + self.houston_distance)
     (other.austin_distance) - (self.austin_distance)
     # (other.houston_distance) - (self.houston_distance)
-
-
   end
 
   def compare_difficulty(other)
@@ -152,13 +156,11 @@ def write_distance_csv(dests, filename) # run once to write csv that stores dist
   CSV.open(filename, "wb") do |csv|
     csv << ["City","AustinTime","AustinDist","HoustonTime","HoustonDist"]
     dests.each do |dest|
-      # destination = dest.city.downcase.gsub " ", "%20"
-      # destination << ",tx"
       destination = "#{dest.lat},#{dest.lon}"
 
       line = []
       if !@austin_distances[destination]
-        line << dest.name.downcase# dest.city.downcase
+        line << dest.name.downcase
         origin = AUSTIN_ORIGIN
         distance = get_google_distance(origin, destination, @austin_distances, invalid)
         if distance.include? nil
@@ -169,7 +171,7 @@ def write_distance_csv(dests, filename) # run once to write csv that stores dist
         distance.map {|i| line << i}
       end
       if !@houston_distances[destination]
-        origin = HOUSTON_ORIGIN # "houston"
+        origin = HOUSTON_ORIGIN 
         distance = get_google_distance(origin, destination, @houston_distances, invalid)
         if distance.include? nil
           destination = dest.city.downcase.gsub(" ", "%20") + ",tx"
@@ -213,9 +215,7 @@ def construct_distances
   end
 end
 
-def filter(destination)
-  destination.length > 7 or (destination.length > 4 and destination.difficulty > 1)
-end
+
 
 def parse_row(section, value, destination)
   case section
@@ -246,6 +246,8 @@ def construct_destinations
 
   construct_distances
 
+  @houston_distances = {} if !@houston_distances
+  @austin_distances = {} if !@austin_distances
 
   files.each do |file|
     filestring = File.open(@folder + file).read
@@ -266,6 +268,9 @@ def construct_destinations
       value = row.css('td').text
       parse_row(section, value, destination)
     end
+
+
+
     destination.houston_distance = @houston_distances[destination.name.downcase] ? @houston_distances[destination.name.downcase][0] : 999999999999
     destination.austin_distance = @austin_distances[destination.name.downcase] ? @austin_distances[destination.name.downcase][0] : 999999999999
     destination.houston_time = @houston_distances[destination.name.downcase] ? @houston_distances[destination.name.downcase][1] : "-"
