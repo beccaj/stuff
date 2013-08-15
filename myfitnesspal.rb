@@ -31,7 +31,7 @@ def download_files
 		filename = "#{FOOD_FOLDER}food-#{datestr}.html"
 		puts "Writing #{filename}"
     File.write(filename, page)
-    date = date + 1
+    date = date + 1 
   end
 end
 
@@ -50,7 +50,7 @@ def make_csv
 	# url = "http://www.myfitnesspal.com/food/diary/arachne538"
 	data = []
 	orig_calories = []
-	all_calories = []
+	all_calories = [] 
 
 	files = Dir.entries(FOOD_FOLDER).select {|f| !File.directory? f}
 
