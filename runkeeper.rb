@@ -1,4 +1,5 @@
 require 'csv'
+require_relative 'weather_utils'
 # require 'datetime'
 
 # Date	Type	Route Name	Distance (mi)	Duration	Average Pace	Average Speed (mph)	Calories Burned	Climb (ft)	Average Heart Rate (bpm)	Notes	GPX File

@@ -104,6 +104,6 @@ def get_daily(month)
 end
 
 puts "Running!"
-get_yearly(@airport, 1948, 2013)
+# get_yearly(@airport, 1948, 2013)
 
 
