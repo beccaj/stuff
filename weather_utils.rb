@@ -4,7 +4,7 @@ require 'open-uri'
 require 'net/http'
 require 'chronic'
 # CDT,Max TemperatureF,Mean TemperatureF,Min TemperatureF,Max Dew PointF,MeanDew PointF,Min DewpointF,Max Humidity, Mean Humidity, Min Humidity, Max Sea Level PressureIn, Mean Sea Level PressureIn, Min Sea Level PressureIn, Max VisibilityMiles, Mean VisibilityMiles, Min VisibilityMiles, Max Wind SpeedMPH, Mean Wind SpeedMPH, Max Gust SpeedMPH,PrecipitationIn, CloudCover, Events, WindDirDegrees
-
+# CST, ... wtf sometimes cst 
 # http://www.wunderground.com/history/airport/katt/2014/7/2/DailyHistory.html
 # 
 class WeatherUtils
@@ -16,8 +16,12 @@ class WeatherUtils
 	end	
 
 	def get_temperature_at_time(date)
-		row = get_row_for_time(date)
-		temp = row['TemperatureF']
+		# begin
+			row = get_row_for_time(date)
+			temp = row['TemperatureF']
+		# rescue Exception => e
+		# 	puts e
+		# end
 	end
 
 	def get_row_for_time(date)
@@ -29,14 +33,25 @@ class WeatherUtils
 		high_time = nil #low_time
 
 		low_index = 0
-		high_index = 0
+		high_index = 0 # TODO bug for first row. Shouldn't be a problem since I don't do things at like 1 am
 
 		data.each_with_index do |row, index|
-			timestring = "#{date.strftime('%Y/%m/%d')}"
-			timestring << " #{row['TimeCDT']}"
-			time = Chronic.parse(timestring).to_datetime
+			next if row.empty?
+			timestring = "#{date.strftime('%Y/%m/%d')} "
+			
+			if row['TimeCDT']  # TODO should just fix this when downloading. Goddammit wunderground
+				timestring << row['TimeCDT']
+			elsif row['TimeCST']
+				timestring << row['TimeCST']
+			else
+				raise "No time column for row #{row}!"
+			end
 
+			# puts "timestr in WeatherUtils : #{timestring}" # TODO
+			time = Chronic.parse(timestring).to_datetime
+			# puts "Date: #{date} Time: #{time}" # TODO
 			if time > date
+				# puts "#{time}: #{date}" # TODO
 				high_time = time
 				high_index = index
 				break
@@ -45,9 +60,16 @@ class WeatherUtils
 			low_time = time
 			low_index = index
 		end
-
-		# TODO check that it always gets the best time
-		best_row = (low_time - date).abs < (high_time - date).abs ? data[low_index] : data[high_index]
+		if !low_time
+			best_row = data[high_index]
+		elsif !high_time
+			best_row = data[low_index]
+		else
+			# TODO check that it always gets the best time
+			best_row = (low_time - date).abs < (high_time - date).abs ? data[low_index] : data[high_index]
+		end
+			raise "No row for date #{date} low_index: #{low_index} high_index: #{high_index}" if best_row.empty?
+			best_row
 	end	
 
 	def data_for_year(year)

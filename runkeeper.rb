@@ -1,5 +1,8 @@
 require 'csv'
 require_relative 'weather_utils'
+require 'nokogiri'
+require 'chronic'
+require "rails"
 # require 'datetime'
 
 # Date	Type	Route Name	Distance (mi)	Duration	Average Pace	Average Speed (mph)	Calories Burned	Climb (ft)	Average Heart Rate (bpm)	Notes	GPX File
@@ -9,10 +12,10 @@ def format_date(date)
 end
 
 def pretty_date(date)
-	date.strftime("%A, %m/%d/%Y")
+	date.strftime("%A, %-m/%-d/%Y").ljust(23)
 end
 
-@path = "/Users/rebeccag/stuff"
+@path = "/Users/rebeccag/stuff/runkeeper"
 @filename = "cardioActivities.csv"
 @bad_dates = ["2014/5/19"].map {|x| format_date(DateTime.parse(x)) }
 
@@ -20,11 +23,15 @@ end
 @end_date = DateTime.now #DateTime.parse("2014/6/17")
 
 def round_to_half(n)
-	x = (n*2.0).round/2.0
+	(n*2.0).round/2.0
+end
+
+def format_round_to_half(n)
+	x = round_to_half(n)
 	sprintf("%g", x)
 end
 
-def get_data(filename)
+def get_data(filename = "#{@path}/#{@filename}")
 	file = File.open(filename, "r")
 	file_string = file.read	
 	data = CSV.parse(file_string, {:headers=> true})	
@@ -73,14 +80,7 @@ def parse_file(filename, debug=false)
 	totals
 end
 
-def write_daily(filename)
-	data = get_data(filename)
-	date = DateTime.parse(data.first['Date'])
 
-	data.each do |row|
-
-	end
-end
 
 def parse_file_by_day(filename, debug=false)
 	data = get_data(filename)
@@ -121,7 +121,7 @@ def print_weekly
 	totals = parse_file("#{@path}/#{@filename}")
 
 	dates.each do |date|
-		puts "#{format_date(date).rjust(10)}: #{round_to_half(totals[date.cweek])}"
+		puts "#{format_date(date).rjust(10)}: #{format_round_to_half(totals[date.cweek])}"
 	end
 end
 
@@ -132,7 +132,8 @@ def write_weekly(filename)
 	filestring = ""
 	dates.each do |date|
 		week = totals[date.cweek]
-		filestring << "#{format_date(date)},#{round_to_half(week[:total])},#{round_to_half(week[:longest])}\n"
+		percent = week[:total] && week[:total] > 0 ? (week[:longest]/week[:total] * 100).round(1) : 0
+		filestring << "#{format_date(date)},#{format_round_to_half(week[:total])},#{format_round_to_half(week[:longest])},#{percent}%\n"
 	end
 	puts filestring
 	File.write(filename, filestring)
@@ -141,40 +142,64 @@ end
 def write_by_week(filename)
 	days = parse_file_by_day("#{@path}/#{@filename}", true)
 	weeks = parse_file("#{@path}/#{@filename}")
-	puts days
-	puts weeks
+	# puts days
+	# puts weeks
 
 	date = @start_date
 	week = @start_date.cweek
 
-	filestring = "Date,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday,Total,Longest\n"
+	filestring = "Date,Week,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday,Total,Longest Percent\n"
 
 	while(date <= @end_date)
-		filestring << "#{format_date(date)},"
+		filestring << "#{format_date(date)},,"
 
 		while(week == date.cweek)
 			datestring = format_date(date)
-			# puts "#{pretty_date(date)}: #{days[datestring] ? round_to_half(days[datestring]) : 0}"
+			puts "#{pretty_date(date)}: #{days[datestring] ? format_round_to_half(days[datestring]) : 0} week #{date.cweek}"
 
-			filestring << "#{days[datestring] ? round_to_half(days[datestring]) : ''},"
+			filestring << "#{days[datestring] ? format_round_to_half(days[datestring]) : ''},"
 
 			date = date + 1
 			# week = date.cweek
 		end
-			filestring << "#{round_to_half(weeks[week][:total])},#{round_to_half(weeks[week][:longest])}\n"
-			# puts round_to_half(weeks[week][:total])
+			percent = weeks[week][:total] && weeks[week][:total] > 0 ? (weeks[week][:longest]/weeks[week][:total] * 100).round(1) : 0
+			# filestring << "#{format_round_to_half(weeks[week][:total])},#{format_round_to_half(weeks[week][:longest])}\n"
+			filestring << "#{format_round_to_half(weeks[week][:total])},#{percent}%\n"
+			# puts format_round_to_half(weeks[week][:total])
 			# puts "\n\n"
 			# date = date + 1
 			week = date.cweek		
 	end
 
 	puts filestring
+	puts "Wrote file to #{filename}"
 	File.write(filename, filestring)
 
 end
 
+def write_daily_weather(filename)
+	puts "Writing weather file to #{filename}"
+	data = get_data
+	date = DateTime.parse(data.first['Date'])
+	weather = WeatherUtils.new
 
+	filestring = ""
+	data.each do |row|
+		next if row['Type'] != "Running"
 
+		datestring = row['Date']
+		time = Chronic.parse(datestring).to_datetime
+		temperature = weather.get_temperature_at_time(time)
+		ave_pace = row['Average Pace'].gsub(":", ".") # TODO
+		# puts "#{pretty_date(time).rjust(25)}: #{time.strftime('%l:%M %p')} #{temperature} #{ave_pace}" if temperature.to_f > -99 && ave_pace.to_f < 15
+		filestring << "#{format_date(time)},#{ave_pace},#{temperature}\n" if temperature.to_f > -99 && ave_pace.to_f < 15
+	end
+	File.open(filename, "w") do |f|
+		f.write(filestring)
+		f.close
+	end	
+end
+# write_daily_weather("/Users/rebeccag/Desktop/run_weather.csv")
 write_by_week("/Users/rebeccag/Desktop/run_detailed.csv")
 # write_daily("/Users/rebeccag/Desktop/run_daily.csv")
 # write_weekly("/Users/rebeccag/Desktop/run_totals.csv")
