@@ -24,6 +24,11 @@ class WeatherUtils
 		# end
 	end
 
+	def get_humidity_at_time(date)
+		row = get_row_for_time(date)
+		row['Humidity']
+	end
+
 	def get_row_for_time(date)
 		data = data_for_day(date)
 		# strftime("%-I:%M %p")
@@ -118,8 +123,11 @@ class WeatherUtils
 
 	def download_days_for_range(start_date, end_date)
 		while start_date <= end_date
-			download_file_for_day(start_date)
-			sleep 1
+			unless File.exist?(full_filepath(filename_for_day(start_date)))
+				download_file_for_day(start_date)
+				sleep 1
+			end
+
 			start_date += 1 
 		end
 	end

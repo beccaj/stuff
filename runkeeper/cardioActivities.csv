@@ -1,5 +1,25 @@
 Date,Type,Route Name,Distance (mi),Duration,Average Pace,Average Speed (mph),Calories Burned,Climb (ft),Average Heart Rate (bpm),Notes,GPX File
-2014-07-19 12:06:01,Running,,5.00,1:05:13,13:03,4.60,392.0,,155,,
+2014-08-21 08:52:46,Running,,2.92,44:36,15:18,3.92,203.0,49.18,161,,2014-08-21-0852.gpx
+2014-08-19 19:27:34,Running,,3.05,43:38,14:19,4.19,213.0,39.27,157,,2014-08-19-1927.gpx
+2014-08-18 18:00:00,Running,,3.24,44:52,13:51,4.33,234.0,,,,
+2014-08-17 19:03:26,Walking,,0.32,9:19,28:48,2.08,23.0,2.73,,,2014-08-17-1903.gpx
+2014-08-16 19:59:28,Running,,2.85,43:37,15:19,3.92,199.0,38.55,,,2014-08-16-1959.gpx
+2014-08-14 19:42:10,Running,,3.07,44:18,14:26,4.15,219.0,38.00,155,"Ave 155 max 168",2014-08-14-1942.gpx
+2014-08-10 15:04:05,Hiking,,4.52,2:16:44,30:14,1.98,399.0,135.77,131,"Ave 131 max 167",2014-08-10-1504.gpx
+2014-08-08 20:14:13,Running,,1.89,26:29,14:00,4.29,138.0,24.98,166,"Ave 166 max 176",2014-08-08-2014.gpx
+2014-08-08 19:53:56,Running,,1.19,16:07,13:34,4.42,88.0,11.42,,,2014-08-08-1953.gpx
+2014-08-06 19:41:47,Running,,3.22,52:19,16:15,3.69,233.0,41.00,158,"Mid run poop. Max 171",2014-08-06-1941.gpx
+2014-08-03 19:25:37,Walking,,4.99,1:46:25,21:20,2.81,325.0,116.82,113,,2014-08-03-1925.gpx
+2014-08-02 11:57:15,Running,,3.05,43:35,14:17,4.20,221.0,39.36,164,,2014-08-02-1157.gpx
+2014-08-01 19:19:17,Walking,,3.36,1:13:34,21:53,2.74,213.0,60.36,,,2014-08-01-1919.gpx
+2014-07-31 08:41:45,Running,,3.06,44:25,14:31,4.13,216.0,41.73,,,2014-07-31-0841.gpx
+2014-07-30 08:32:55,Running,,3.14,43:49,13:57,4.30,235.0,53.91,159,"ave 159 max 172",2014-07-30-0832.gpx
+2014-07-27 19:45:00,Running,,3.46,48:38,14:03,4.27,250.0,,,"Treadmill. Running portion was 44 minutes, the rest was warmup and cooldownish. Did white plan phase iv day 1: 30E + 6 x ST + 6E. Ave 147 and max 162, but only for last 15 mins (forgot to record before that.) Ave was probably higher, crept up in the first 30 min. Went to like 10:45 on the strides which was really fun! Though right hip hurt some during that",
+2014-07-26 10:03:03,Running,,2.81,45:10,16:06,3.73,192.0,15.04,150,"Outside!! So humid. Hard to keep heartrate down, hence the very slow pace. Includes deliberate walking intervals. White plan phase iii day last day. Ave 150 max 165",2014-07-26-1003.gpx
+2014-07-25 21:49:26,Walking,,0.00,0:00,,,0.0,0.00,,,2014-07-25-2149.gpx
+2014-07-24 17:45:00,Running,,2.23,30:00,13:27,4.46,168.0,,154,"Treadmill! Max 163",
+2014-07-21 17:45:20,Running,,4.00,56:47,14:12,4.23,287.0,,150,"Treadmill.  Ave 150 max 166",
+2014-07-19 12:00:00,Running,,5.00,1:05:13,13:03,4.60,392.0,,155,"Treadmill. Tried to keep heart rate slow, had to walk a lot. Skeptical of average pace, I thought it was even slower.",
 2014-07-17 19:39:08,Running,,4.00,49:34,12:24,4.84,316.0,,,"Treadmill. ",
 2014-07-16 17:30:00,Running,,2.00,25:41,12:51,4.67,159.0,,,"Treadmill. Bumped incline up to 1 over the course of the run",
 2014-07-15 17:00:00,Running,,3.00,38:03,12:41,4.73,242.0,,,"Treadmill. Went fine",
@@ -35,7 +55,7 @@ Ran in the mysterious possibly illegal area of the balcones canyonlands. Had to 
 2014-05-23 20:32:00,Running,,2.25,27:00,11:59,5.01,189.0,17.52,,,2014-05-23-2032.gpx
 2014-05-21 08:10:00,Running,"Asmara loop",3.10,40:00,12:54,4.65,245.0,58.70,,,2014-05-21-0810.gpx
 2014-05-20 08:00:00,Running,,3.10,40:00,12:54,4.65,245.0,58.70,,,2014-05-20-0800.gpx
-2014-05-19 16:55:54,Running,,4.28,54:00,12:38,4.75,347.0,82.08,,,2014-05-19-1655.gpx
+2014-05-17 16:55:00,Running,,4.28,54:00,12:38,4.75,342.0,64.22,,,2014-05-17-1655.gpx
 2014-05-15 08:15:00,Running,,2.62,34:00,12:58,4.63,203.0,40.13,,,2014-05-15-0815.gpx
 2014-05-14 07:30:00,Running,,3.00,36:00,11:59,5.00,247.0,8.47,,,2014-05-14-0730.gpx
 2014-05-13 08:11:00,Running,,2.50,30:00,12:00,5.00,204.0,,,,

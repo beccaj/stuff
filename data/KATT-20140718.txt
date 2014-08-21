@@ -1,0 +1,46 @@
+
+TimeCDT,TemperatureF,Dew PointF,Humidity,Sea Level PressureIn,VisibilityMPH,Wind Direction,Wind SpeedMPH,Gust SpeedMPH,PrecipitationIn,Events,Conditions,WindDirDegrees,DateUTC
+12:25 AM,73.9,73.9,100,29.91,8.0,Variable,5.8,-,0.02,Thunderstorm,Thunderstorm,0,2014-07-18 05:25:00
+12:51 AM,73.9,73.9,100,29.87,4.0,Variable,3.5,-,0.02,Thunderstorm,Mostly Cloudy,0,2014-07-18 05:51:00
+1:14 AM,75.0,73.9,96,29.90,1.8,Calm,Calm,-,0.05,Rain-Thunderstorm,Heavy Thunderstorms and Rain,0,2014-07-18 06:14:00
+1:21 AM,75.0,73.9,96,29.91,1.2,Calm,Calm,-,0.09,Rain,Light Rain,0,2014-07-18 06:21:00
+1:27 AM,75.0,73.9,96,29.91,3.0,Calm,Calm,-,0.09,Rain,Light Rain,0,2014-07-18 06:27:00
+1:36 AM,75.0,73.9,96,29.91,4.0,Calm,Calm,-,0.09,,Overcast,0,2014-07-18 06:36:00
+1:42 AM,75.0,73.9,96,29.90,2.5,East,4.6,-,0.09,,Overcast,90,2014-07-18 06:42:00
+1:51 AM,75.0,73.9,96,29.87,2.5,East,3.5,-,0.09,,Overcast,100,2014-07-18 06:51:00
+2:08 AM,73.9,73.9,100,29.91,3.0,East,3.5,-,N/A,,Mostly Cloudy,100,2014-07-18 07:08:00
+2:26 AM,73.9,73.9,100,29.91,2.5,East,6.9,-,N/A,,Mostly Cloudy,100,2014-07-18 07:26:00
+2:49 AM,75.2,73.4,94,29.91,2.5,Variable,4.6,-,0.00,Rain-Thunderstorm,Light Thunderstorms and Rain,0,2014-07-18 07:49:00
+2:51 AM,75.0,73.9,96,29.88,2.5,Variable,4.6,-,0.00,Rain-Thunderstorm,Light Thunderstorms and Rain,0,2014-07-18 07:51:00
+3:13 AM,73.9,73.9,100,29.92,1.8,East,8.1,-,0.12,Rain-Thunderstorm,Heavy Thunderstorms and Rain,80,2014-07-18 08:13:00
+3:29 AM,73.0,73.0,100,29.92,0.8,North,-9999.0,-,0.48,Rain-Thunderstorm,Heavy Thunderstorms and Rain,0,2014-07-18 08:29:00
+3:51 AM,72.0,71.1,97,29.88,1.0,SW,8.1,18.4,1.28,Rain-Thunderstorm,Heavy Thunderstorms and Rain,230,2014-07-18 08:51:00
+4:04 AM,72.0,72.0,100,29.92,1.0,Variable,3.5,-,0.10,Rain-Thunderstorm,Heavy Thunderstorms and Rain,0,2014-07-18 09:04:00
+4:15 AM,73.0,72.0,96,29.91,3.0,South,5.8,-,0.15,Rain,Light Rain,190,2014-07-18 09:15:00
+4:51 AM,73.0,72.0,96,29.87,4.0,Calm,Calm,-,0.15,,Clear,0,2014-07-18 09:51:00
+5:51 AM,73.0,72.0,96,29.87,5.0,Calm,Calm,-,N/A,,Clear,0,2014-07-18 10:51:00
+6:51 AM,73.0,72.0,96,29.89,6.0,NNW,3.5,-,N/A,,Clear,330,2014-07-18 11:51:00
+7:51 AM,73.9,72.0,93,29.91,6.0,Calm,Calm,-,N/A,,Clear,0,2014-07-18 12:51:00
+8:51 AM,75.9,73.0,91,29.91,7.0,Calm,Calm,-,N/A,,Mostly Cloudy,0,2014-07-18 13:51:00
+9:13 AM,75.9,73.0,91,29.95,9.0,North,3.5,-,N/A,,Overcast,360,2014-07-18 14:13:00
+9:51 AM,75.9,73.0,91,29.93,10.0,NNE,5.8,-,N/A,,Overcast,30,2014-07-18 14:51:00
+10:51 AM,73.9,71.1,91,29.95,10.0,Variable,5.8,-,N/A,,Overcast,0,2014-07-18 15:51:00
+11:27 AM,73.9,70.0,87,29.99,10.0,Variable,4.6,-,N/A,,Overcast,0,2014-07-18 16:27:00
+11:38 AM,73.9,70.0,87,29.99,10.0,NNE,6.9,-,N/A,,Overcast,30,2014-07-18 16:38:00
+11:51 AM,73.9,70.0,87,29.96,10.0,NNE,6.9,17.3,N/A,,Overcast,30,2014-07-18 16:51:00
+12:51 PM,75.0,69.1,82,29.97,10.0,NNE,8.1,-,N/A,,Overcast,30,2014-07-18 17:51:00
+1:05 PM,75.0,69.1,82,30.01,10.0,Variable,5.8,-,N/A,,Overcast,0,2014-07-18 18:05:00
+1:27 PM,73.9,68.0,82,30.01,10.0,NNE,6.9,-,N/A,,Overcast,20,2014-07-18 18:27:00
+1:51 PM,73.9,68.0,82,29.97,10.0,Variable,6.9,-,N/A,,Overcast,0,2014-07-18 18:51:00
+2:51 PM,75.9,68.0,76,29.97,10.0,North,6.9,-,N/A,,Overcast,350,2014-07-18 19:51:00
+3:09 PM,75.9,68.0,76,29.99,10.0,NNE,6.9,-,N/A,,Overcast,30,2014-07-18 20:09:00
+3:51 PM,75.0,68.0,79,29.96,10.0,North,5.8,-,N/A,,Overcast,10,2014-07-18 20:51:00
+4:51 PM,75.9,68.0,76,29.95,10.0,NNW,3.5,-,N/A,,Overcast,340,2014-07-18 21:51:00
+5:51 PM,77.0,68.0,74,29.94,10.0,Calm,Calm,-,N/A,,Overcast,0,2014-07-18 22:51:00
+6:51 PM,75.9,68.0,76,29.92,10.0,Variable,3.5,-,N/A,,Overcast,0,2014-07-18 23:51:00
+7:51 PM,75.9,68.0,76,29.92,10.0,Calm,Calm,-,N/A,,Overcast,0,2014-07-19 00:51:00
+8:51 PM,75.9,68.0,76,29.94,10.0,Calm,Calm,-,N/A,,Overcast,0,2014-07-19 01:51:00
+9:12 PM,75.9,69.1,79,29.98,10.0,Calm,Calm,-,N/A,,Overcast,0,2014-07-19 02:12:00
+9:51 PM,75.9,68.0,76,29.95,10.0,Calm,Calm,-,N/A,,Overcast,0,2014-07-19 02:51:00
+10:51 PM,73.9,68.0,82,29.96,10.0,ENE,4.6,-,N/A,,Mostly Cloudy,70,2014-07-19 03:51:00
+11:51 PM,75.0,68.0,79,29.98,10.0,Calm,Calm,-,N/A,,Overcast,0,2014-07-19 04:51:00

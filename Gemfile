@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby "2.1.1"
+ruby "1.9.3"
 
 gem 'dashing'
 gem 'therubyracer'
