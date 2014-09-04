@@ -1,6 +1,20 @@
 module RunkeeperHelper
 # Date	Type	Route Name	Distance (mi)	Duration	Average Pace	Average Speed (mph)	Calories Burned	Climb (ft)	Average Heart Rate (bpm)	Notes	GPX File
+	class MovingAverage
+		def initialize(size)
+			@size = size
+			@queue = []
+		end
 
+		def add(value)
+			@queue << value
+			@queue.shift if @queue.size > @size
+		end
+
+		def average
+			@queue.inject(0.0) {|sum, x| sum + x}/@queue.size
+		end
+	end
 
 	def format_date(date)
 		date.strftime("%-m/%-d/%Y")

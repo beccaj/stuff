@@ -15,11 +15,11 @@ require 'mechanize'
 
 # puts response.body
 
-BASE_FILEPATH = "/src/stuff/"
+BASE_FILEPATH = "/Users/rebeccag/stuff/"
 FOOD_FOLDER = "files-myfitnesspal/"
 MEASUREMENT_FOLDER = "measurements/"
 def download_files
-	start_date = Date.today-240
+	start_date = Date.today-30
 	# start_date = Date.today - 3
 	date = start_date
 	while date < Date.today
@@ -88,6 +88,7 @@ def make_food_csv
 	files = Dir.entries(FOOD_FOLDER).select {|f| !File.directory? f}
 
 	files.each do |file|
+		next unless /\d\d\d\d-\d\d-\d\d/.match(file)
 		date = /\d\d\d\d-\d\d-\d\d/.match(file)[0]
 		# url = "http://www.myfitnesspal.com/food/diary/arachne538?date=2013-07-25"
 		page = Nokogiri::HTML(File.open("#{FOOD_FOLDER}#{file}"))
@@ -117,10 +118,18 @@ def make_food_csv
 		puts "\tmin calories: #{slice.min{|x,y| x[1] <=> y[1]}}"
 	end
 
+	sum = orig_calories.inject(0) {|sum, n| sum + n[1]}
+	average = sum/orig_calories.length
+
+	puts "\n** Average calories of entire period: #{average}"
+	puts "\tmax calories: #{orig_calories.max{|x,y| x[1] <=> y[1]}}"
+	puts "\tmin calories: #{orig_calories.min{|x,y| x[1] <=> y[1]}}"		
+
+
 
 	# orig_calories.map {|c| puts "Total calories for #{c[0]}: #{c[1]}"}
 end
 	
-# # download_files	# do once
-# # download_measurements # do once
-# make_csv
+# download_files	# do once
+# download_measurements # do once
+make_food_csv
