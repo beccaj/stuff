@@ -20,17 +20,23 @@ FOOD_FOLDER = "files-myfitnesspal/"
 MEASUREMENT_FOLDER = "measurements/"
 def download_files
 	start_date = Date.today-30
+	end_date = Date.today-1 # might not be done for today
 	# start_date = Date.today - 3
 	date = start_date
-	while date < Date.today
+	# while date < Date.today
+	(start_date..end_date).each do |date|
 		datestr = date.strftime('%Y-%m-%d')
+		filename = "#{FOOD_FOLDER}food-#{datestr}.html"
+
+		next if File.exist?(filename)	
+
 		url = "http://www.myfitnesspal.com/food/diary/arachne538?date=#{datestr}"	
 		page = nil
+		puts "Opening url #{url}"
 	  open(url) { |f| 
 			page = f.read
 		}
 
-		filename = "#{FOOD_FOLDER}food-#{datestr}.html"
 		puts "Writing #{filename}"
     File.write(filename, page)
     date = date + 1 
@@ -130,6 +136,6 @@ def make_food_csv
 	# orig_calories.map {|c| puts "Total calories for #{c[0]}: #{c[1]}"}
 end
 	
-# download_files	# do once
+download_files	# do once
 # download_measurements # do once
 make_food_csv

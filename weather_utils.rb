@@ -121,9 +121,9 @@ class WeatherUtils
 	end
 
 
-	def download_days_for_range(start_date, end_date)
+	def download_days_for_range(start_date, end_date, force = false)
 		while start_date <= end_date
-			unless File.exist?(full_filepath(filename_for_day(start_date)))
+			if force || !File.exist?(full_filepath(filename_for_day(start_date)))
 				download_file_for_day(start_date)
 				sleep 1
 			end

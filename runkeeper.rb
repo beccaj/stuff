@@ -1,6 +1,8 @@
 require 'csv'
 require_relative 'weather_utils'
 require_relative 'runkeeper_helper'
+require_relative 'runkeeper_chart'
+
 require 'nokogiri'
 require 'chronic'
 require "rails"
@@ -67,10 +69,10 @@ def refresh_files(force=false)
     end_field.value = @end_date.strftime("%-m/%-d/%Y")  
 
     page = agent.submit(form)     
-    puts "Waiting after submitted form (try #{tries})"
+    puts "Waiting 3 min at #{DateTime.current.strftime("%H:%M:%S")} after submitting form (try #{tries})"
     sleep(60*3) # wait 3 minutes
 
-    page = login_runkeeper(agent) # TODO not entirely sure this will work, might already be logged in
+    page = login_runkeeper(agent)
     link = page.link_with(text: "Download Now!")
     tries += 1
   end
@@ -292,19 +294,42 @@ def write_daily_weather(filename, debug = false)
   data = get_data
   date = DateTime.parse(data.first['Date'])
   weather = WeatherUtils.new
+  lines = []
 
-  filestring = ""
+  smooth_weeks = 5
+
+  temperature = MovingAverage.new(smooth_weeks)
+  humidity = MovingAverage.new(smooth_weeks)
+  ave_pace = MovingAverage.new(smooth_weeks)
+  combined = MovingAverage.new(smooth_weeks)
+
+  filestring = "date,ave_pace,temperature,humidity,combined\n"
   data.each do |row|
     next if row['Type'] != "Running"
+      datestring = row['Date']
+      time = Chronic.parse(datestring).to_datetime
 
-    datestring = row['Date']
-    time = Chronic.parse(datestring).to_datetime
-    temperature = weather.get_temperature_at_time(time).to_f
-    humidity = weather.get_humidity_at_time(time).to_f
-    ave_pace = format_round_to_quarter(string_to_float(row['Average Pace']))
-    # puts "#{pretty_date(time).rjust(25)}: #{time.strftime('%l:%M %p')} #{temperature} #{ave_pace}" if temperature.to_f > -99 && ave_pace.to_f < 15
-    filestring << "#{format_date(time)},#{ave_pace},#{temperature},#{humidity},#{temperature + humidity}\n" if temperature.to_f > -99 && ave_pace.to_f < 16 && humidity > 0
+      temperature_f = weather.get_temperature_at_time(time).to_f
+      humidity_f = weather.get_humidity_at_time(time).to_f
+      ave_pace_f = string_to_float(row['Average Pace'])
+      combined_f = humidity_f + temperature_f
+
+    if temperature_f.to_f > -99 && ave_pace_f.to_f < 20 && humidity_f.to_f > 0
+      temperature.add temperature_f
+      humidity.add humidity_f
+      ave_pace.add ave_pace_f
+      combined.add combined_f
+
+      temperature_s = format_round_to_quarter(temperature)
+      humidity_s = format_round_to_quarter(humidity)
+      ave_pace_s = format_round_to_quarter(ave_pace)
+      combined_s = format_round_to_quarter(combined)
+      # puts "#{pretty_date(time).rjust(25)}: #{time.strftime('%l:%M %p')} #{temperature} #{ave_pace}" if temperature.to_f > -99 && ave_pace.to_f < 15
+      lines << "#{format_date(time)},#{ave_pace_s},#{temperature_s},#{humidity_s},#{combined_s}\n" 
+    end
   end
+  lines.reverse.each {|line| filestring << line}
+
   puts filestring if debug
 
   File.open(filename, "w") do |f|
@@ -328,23 +353,42 @@ def write_daily_weather_horizontal(filename, debug = false) # for highcharts
   rows["ave_pace"] = []
   rows["combined"] = []
 
+  smooth_weeks = 5
+
+  temperature = MovingAverage.new(smooth_weeks)
+  humidity = MovingAverage.new(smooth_weeks)
+  ave_pace = MovingAverage.new(smooth_weeks)
+  combined = MovingAverage.new(smooth_weeks)
+
   data.each do |row|
     next if row['Type'] != "Running" # TODO also skip treadmill days
 
     datestring = row['Date']
     time = Chronic.parse(datestring).to_datetime
-    temperature = weather.get_temperature_at_time(time).to_f
-    humidity = weather.get_humidity_at_time(time).to_f
-    ave_pace = format_round_to_quarter(string_to_float(row['Average Pace']))
-    combined = temperature + humidity
+    # temperature = weather.get_temperature_at_time(time).to_f
+    # humidity = weather.get_humidity_at_time(time).to_f
+    # ave_pace = format_round_to_quarter(string_to_float(row['Average Pace']))
+    # combined = temperature + humidity
 
-    next unless (temperature.to_f > -99 && ave_pace.to_f < 16 && humidity > 0)
+    temperature_f = weather.get_temperature_at_time(time).to_f
+    humidity_f = weather.get_humidity_at_time(time).to_f
+    ave_pace_f = format_round_to_quarter(string_to_float(row['Average Pace'])).to_f
+    combined_f = temperature_f + humidity_f    
+
+    next unless (temperature_f.to_f > -99 && ave_pace_f.to_f < 16 && humidity_f.to_f > 0)
+
+
+    temperature.add(temperature_f)
+    humidity.add(humidity_f)
+    ave_pace.add(ave_pace_f)
+    combined.add(combined_f)
+
     # filestring << "#{format_date(time)},#{ave_pace},#{temperature},#{humidity},#{temperature + humidity}\n" if temperature.to_f > -99 && ave_pace.to_f < 16 && humidity > 0
     rows["time"] << "\"#{format_date(time)}\""
-    rows["temperature"] << temperature
-    rows["humidity"] << humidity # TODO There are some awfully suscpect humidities. 97% on 3/15? I guess that's right...?
-    rows["ave_pace"] << ave_pace
-    rows["combined"] << combined
+    rows["temperature"] << format_round_to_quarter(temperature.average)
+    rows["humidity"] << format_round_to_quarter(humidity.average) # TODO There are some awfully suscpect humidities. 97% on 3/15? I guess that's right...?
+    rows["ave_pace"] << format_round_to_quarter(ave_pace.average)
+    rows["combined"] << format_round_to_quarter(combined.average)
 
 
   end
@@ -356,10 +400,10 @@ def write_daily_weather_horizontal(filename, debug = false) # for highcharts
 
   puts filestring if debug
 
-  # File.open(filename, "w") do |f|
-  #   f.write(filestring)
-  #   f.close
-  # end 
+  File.open(filename, "w") do |f|
+    f.write(filestring)
+    f.close
+  end 
 end
 
 def print_field_by_day(fieldnames, options = {}, filename = @full_path, debug = true)
@@ -405,7 +449,8 @@ def print_field_by_day(fieldnames, options = {}, filename = @full_path, debug = 
 end
 
 weather = WeatherUtils.new
-weather.download_days_for_range(@start_date, @end_date)
+weather.download_days_for_range(@start_date, @end_date-1)
+# weather.download_days_for_range(@start_date, @end_date-1, true) # forces a refresh for all of them. Don't do this takes like 20 mins
 refresh_files # true # uncomment "true" to force a refresh
 
 # print_field_by_day(["Duration", "Average Pace", "Calories Burned"], {
@@ -413,9 +458,10 @@ refresh_files # true # uncomment "true" to force a refresh
 #   # start_date: (DateTime.current-35).to_s,
 #   # days: ["Monday", "Tuesday", "wednesday", "thursday", "friday"]
 #   })
-# write_daily_weather_horizontal("/Users/rebeccag/Desktop/run_weather_highcharts.csv", true)
-# write_daily_weather_horizontal("/Users/rebeccag/Desktop/run_weather_highcharts.csv")
-# write_daily_weather("/Users/rebeccag/Desktop/run_weather.csv")
-write_by_week("/Users/rebeccag/Desktop/run_detailed.csv")
+# write_daily_weather_horizontal("/Users/rebeccag/Desktop/run_weather_highcharts.csv", true) # note that I'm using a moving average right now, don't get confused! :P
+# write_daily_weather_horizontal("/Users/rebeccag/stuff/run_highcharts.csv")
+write_daily_weather("/Users/rebeccag/stuff/run_weather.csv") # I often want this
+write_weather_graph_csv
+# write_by_week("/Users/rebeccag/Desktop/run_detailed.csv") # this is the one I usually want
 
 

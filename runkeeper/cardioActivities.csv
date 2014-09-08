@@ -1,4 +1,7 @@
 Date,Type,Route Name,Distance (mi),Duration,Average Pace,Average Speed (mph),Calories Burned,Climb (ft),Average Heart Rate (bpm),Notes,GPX File
+2014-09-07 18:46:53,Walking,,6.96,2:24:32,20:46,2.89,441.0,134.27,120,"Max 157. Hrm died a lot",2014-09-07-1846.gpx
+2014-09-06 19:45:32,Running,,2.93,44:49,15:19,3.92,197.0,32.77,154,"Max 164",2014-09-06-1945.gpx
+2014-09-04 18:30:12,Running,,3.17,44:06,13:56,4.31,227.0,38.24,151,"Max 166. Ate my run >:( So this is entered manually",2014-09-04-1830.gpx
 2014-09-02 19:54:52,Running,,2.77,44:06,15:55,3.77,186.0,31.70,153,"Max 162",2014-09-02-1954.gpx
 2014-09-01 19:42:50,Running,,2.87,44:25,15:30,3.87,197.0,39.36,149,"Max 160. Tried to keep hr < 154",2014-09-01-1942.gpx
 2014-08-31 19:24:05,Walking,,4.64,1:32:34,19:56,3.01,318.0,144.39,120,"Hrm crashed several times",2014-08-31-1924.gpx

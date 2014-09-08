@@ -1,4 +1,11 @@
+require 'csv'
+require "rails"
+
+
 module RunkeeperHelper
+
+
+
 # Date	Type	Route Name	Distance (mi)	Duration	Average Pace	Average Speed (mph)	Calories Burned	Climb (ft)	Average Heart Rate (bpm)	Notes	GPX File
 	class MovingAverage
 		def initialize(size)
@@ -7,13 +14,47 @@ module RunkeeperHelper
 		end
 
 		def add(value)
-			@queue << value
+			@queue << value.to_f
 			@queue.shift if @queue.size > @size
 		end
 
 		def average
 			@queue.inject(0.0) {|sum, x| sum + x}/@queue.size
 		end
+
+		def to_s
+			self.average
+		end
+
+		def to_f
+			self.average.to_f
+		end
+
+		def to_i
+			self.average.to_i
+		end
+
+		def +(other)
+			self.average + other.to_f
+		end
+
+		def *(other)
+			self.average * other.to_f
+		end		
+
+		def /(other)
+			self.average / other.to_f
+		end		
+
+		def -(other)
+			self.average - other.to_f
+		end		
+	end
+
+	def get_data(filename)
+	  file = File.open(filename, "r")
+	  file_string = file.read 
+	  data = CSV.parse(file_string, {:headers=> true})  
 	end
 
 	def format_date(date)

@@ -6,7 +6,7 @@ include FileUtils
 # require_relative '../runkeeper_helper'
 
 @start_date = DateTime.parse("2014/8/15") # when I got the fitbit!
-@summary_file = "summary.json"
+@summary_file = "summary.json" # TODO we're gonna need some way of not rewriting this every day because it takes multpiple requests
 
 consumer_key = '9491ce6178664f87bdf7c81a16908359'
 consumer_secret = 'cfe917c341a949d7ac4f0695c16bd32b'
@@ -91,10 +91,11 @@ def get_summary(filename = @summary_file)
 
 	backup_file(filename)
 
-	while start_date <= end_date
-		summary = @client.activities_on_date(start_date)['summary']
-		hash[date_for_parsing(start_date)] = summary
-		start_date += 1
+	# while start_date <= end_date
+	(start_date..end_date).each do |date|
+		summary = @client.activities_on_date(date)['summary']
+		hash[date_for_parsing(date)] = summary
+		date += 1
 	end
 
 	filestring = hash.to_json
