@@ -8,7 +8,6 @@ require 'chronic'
 require "rails"
 
 require 'net/http'
-require 'nokogiri'     
 require 'open-uri'
 require 'mechanize'
 
@@ -296,7 +295,7 @@ def write_daily_weather(filename, debug = false)
   weather = WeatherUtils.new
   lines = []
 
-  smooth_weeks = 5
+  smooth_weeks = 1
 
   temperature = MovingAverage.new(smooth_weeks)
   humidity = MovingAverage.new(smooth_weeks)
@@ -306,13 +305,16 @@ def write_daily_weather(filename, debug = false)
   filestring = "date,ave_pace,temperature,humidity,combined\n"
   data.each do |row|
     next if row['Type'] != "Running"
-      datestring = row['Date']
-      time = Chronic.parse(datestring).to_datetime
 
-      temperature_f = weather.get_temperature_at_time(time).to_f
-      humidity_f = weather.get_humidity_at_time(time).to_f
-      ave_pace_f = string_to_float(row['Average Pace'])
-      combined_f = humidity_f + temperature_f
+    datestring = row['Date']
+    time = Chronic.parse(datestring).to_datetime
+    next if time >= DateTime.current.beginning_of_day
+
+
+    temperature_f = weather.get_temperature_at_time(time).to_f
+    humidity_f = weather.get_humidity_at_time(time).to_f
+    ave_pace_f = string_to_float(row['Average Pace'])
+    combined_f = humidity_f + temperature_f
 
     if temperature_f.to_f > -99 && ave_pace_f.to_f < 20 && humidity_f.to_f > 0
       temperature.add temperature_f
@@ -448,20 +450,30 @@ def print_field_by_day(fieldnames, options = {}, filename = @full_path, debug = 
 
 end
 
+# Date  Type  Route Name  Distance (mi) Duration  Average Pace  Average Speed (mph) Calories Burned Climb (ft)  Average Heart Rate (bpm)  Notes GPX File
+
+
 weather = WeatherUtils.new
 weather.download_days_for_range(@start_date, @end_date-1)
 # weather.download_days_for_range(@start_date, @end_date-1, true) # forces a refresh for all of them. Don't do this takes like 20 mins
-refresh_files # true # uncomment "true" to force a refresh
+refresh_files # true # uncomment "true" to force a refresh. I usually don't want that
 
 # print_field_by_day(["Duration", "Average Pace", "Calories Burned"], {
 #   activity_types: ["Walking"]
 #   # start_date: (DateTime.current-35).to_s,
 #   # days: ["Monday", "Tuesday", "wednesday", "thursday", "friday"]
 #   })
-# write_daily_weather_horizontal("/Users/rebeccag/Desktop/run_weather_highcharts.csv", true) # note that I'm using a moving average right now, don't get confused! :P
-# write_daily_weather_horizontal("/Users/rebeccag/stuff/run_highcharts.csv")
-write_daily_weather("/Users/rebeccag/stuff/run_weather.csv") # I often want this
-write_weather_graph_csv
-# write_by_week("/Users/rebeccag/Desktop/run_detailed.csv") # this is the one I usually want
+
+# print_field_by_day(["Distance (mi)"], {
+#   activity_types: ["Hiking"]
+#   })
+
+begin
+  write_daily_weather("/Users/rebeccag/stuff/run_weather.csv") # I often want this
+  write_weather_graph_csv # write_daily_weather before running this. This is to make an awesome graph!
+rescue Exception => e
+  puts e
+end
+write_by_week("/Users/rebeccag/Desktop/run_detailed.csv") # this is the one I usually want
 
 
