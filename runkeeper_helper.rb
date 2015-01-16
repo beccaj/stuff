@@ -13,12 +13,21 @@ module RunkeeperHelper
 			@queue = []
 		end
 
+		def values
+			@queue
+		end
+
+		def reset
+			@queue = []
+		end
+
 		def add(value)
 			@queue << value.to_f
 			@queue.shift if @queue.size > @size
 		end
 
 		def average
+			return 0 if @queue.size == 0
 			@queue.inject(0.0) {|sum, x| sum + x}/@queue.size
 		end
 
@@ -40,21 +49,21 @@ module RunkeeperHelper
 
 		def *(other)
 			self.average * other.to_f
-		end		
+		end
 
 		def /(other)
 			self.average / other.to_f
-		end		
+		end
 
 		def -(other)
 			self.average - other.to_f
-		end		
+		end
 	end
 
 	def get_data(filename)
 	  file = File.open(filename, "r")
-	  file_string = file.read 
-	  data = CSV.parse(file_string, {:headers=> true})  
+	  file_string = file.read
+	  data = CSV.parse(file_string, {:headers=> true})
 	end
 
 	def format_date(date)
@@ -87,9 +96,9 @@ module RunkeeperHelper
 		return 0 if value.nil?
 		result = if value.include?(":")
 			backwards = value.split(":").reverse
-			seconds = backwards[0] ? backwards[0].to_f : 0.0 
-			minutes = backwards[1] ? backwards[1].to_f : 0.0 
-			hours = backwards[2] ? backwards[2].to_f : 0.0 
+			seconds = backwards[0] ? backwards[0].to_f : 0.0
+			minutes = backwards[1] ? backwards[1].to_f : 0.0
+			hours = backwards[2] ? backwards[2].to_f : 0.0
 
 			hours * 60 + minutes + seconds/60.0
 		elsif value.respond_to?(:to_f)

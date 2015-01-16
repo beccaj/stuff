@@ -42,17 +42,17 @@ def login_runkeeper(url="http://runkeeper.com/exportDataForm", agent)
   username_field.value = "rebeccarosegoodwin@gmail.com"
   password_field.value = "sophiesky"
 
-  page = agent.submit(form)       
+  page = agent.submit(form)
 end
 
 def refresh_files(force=false)
-  agent = Mechanize.new  
+  agent = Mechanize.new
   filename = "runkeeper-#{DateTime.current.strftime('%Y%m%d')}.zip"
   puts "Refreshing runkeeper files..."
 
   if File.exist?(filename) && !force
     puts "Already refreshed runkeeper files for today"
-    return 
+    return
   end
 
   page = login_runkeeper(agent)
@@ -65,9 +65,9 @@ def refresh_files(force=false)
     start_field = form.field_with(id: "startDate")
     end_field = form.field_with(id: "endDate")
     start_field.value = @start_date.strftime("%-m/%-d/%Y")
-    end_field.value = @end_date.strftime("%-m/%-d/%Y")  
+    end_field.value = @end_date.strftime("%-m/%-d/%Y")
 
-    page = agent.submit(form)     
+    page = agent.submit(form)
     puts "Waiting 3 min at #{DateTime.current.strftime("%H:%M:%S")} after submitting form (try #{tries})"
     sleep(60*3) # wait 3 minutes
 
@@ -84,7 +84,7 @@ def refresh_files(force=false)
     end
 
     puts "Saving zip file: #{filename}"
-    unzip_runkeeper(filename)   
+    unzip_runkeeper(filename)
   else
     puts "Problem getting page"
   end
@@ -107,8 +107,8 @@ def unzip_runkeeper(filename, force=false)
 
       begin
         entry.extract("#{@path}/#{entry.name}")
-        puts "Extracted #{entry.name}"        
-      rescue Exception => e 
+        puts "Extracted #{entry.name}"
+      rescue Exception => e
         puts "Exception: #{e}"
       end
 
@@ -120,8 +120,8 @@ end
 
 def get_data(filename = "#{@path}/#{@filename}")
   file = File.open(filename, "r")
-  file_string = file.read 
-  data = CSV.parse(file_string, {:headers=> true})  
+  file_string = file.read
+  data = CSV.parse(file_string, {:headers=> true})
 end
 
 def get_mondays(start_date, end_date)
@@ -142,6 +142,8 @@ def parse_file(filename = "#{@path}/#{@filename}", debug=false)
   total = 0
   week = date.cweek
   totals = {}
+
+  # TODO will this work once I've been running more than a year?
   (1..52).map {|x| totals[x] = {total: 0, longest: 0}}
   data.each do |row|
     date = DateTime.parse(row['Date'])
@@ -270,7 +272,7 @@ def write_by_week(filename, debug = false)
       moving_ave.add(this_weeks_total)
       last_four_weeks = format_round_to_quarter(moving_ave.average)
       # filestring << "#{format_round_to_half(weeks[week][:total])},#{format_round_to_half(weeks[week][:longest])}\n"
-      
+
 
       filestring << "#{format_round_to_quarter(this_weeks_total)},#{percent_increase}%,#{longest},#{long_percent}%,#{last_four_weeks},#{ave_per_week}\n"
       last_weeks_total = weeks[week][:total].to_f
@@ -278,7 +280,7 @@ def write_by_week(filename, debug = false)
       # puts format_round_to_half(weeks[week][:total])
       # puts "\n\n"
       # date = date + 1
-      week = date.cweek   
+      week = date.cweek
   end
 
   puts filestring if debug
@@ -327,7 +329,7 @@ def write_daily_weather(filename, debug = false)
       ave_pace_s = format_round_to_quarter(ave_pace)
       combined_s = format_round_to_quarter(combined)
       # puts "#{pretty_date(time).rjust(25)}: #{time.strftime('%l:%M %p')} #{temperature} #{ave_pace}" if temperature.to_f > -99 && ave_pace.to_f < 15
-      lines << "#{format_date(time)},#{ave_pace_s},#{temperature_s},#{humidity_s},#{combined_s}\n" 
+      lines << "#{format_date(time)},#{ave_pace_s},#{temperature_s},#{humidity_s},#{combined_s}\n"
     end
   end
   lines.reverse.each {|line| filestring << line}
@@ -337,7 +339,7 @@ def write_daily_weather(filename, debug = false)
   File.open(filename, "w") do |f|
     f.write(filestring)
     f.close
-  end 
+  end
 end
 
 def write_daily_weather_horizontal(filename, debug = false) # for highcharts
@@ -375,7 +377,7 @@ def write_daily_weather_horizontal(filename, debug = false) # for highcharts
     temperature_f = weather.get_temperature_at_time(time).to_f
     humidity_f = weather.get_humidity_at_time(time).to_f
     ave_pace_f = format_round_to_quarter(string_to_float(row['Average Pace'])).to_f
-    combined_f = temperature_f + humidity_f    
+    combined_f = temperature_f + humidity_f
 
     next unless (temperature_f.to_f > -99 && ave_pace_f.to_f < 16 && humidity_f.to_f > 0)
 
@@ -405,7 +407,7 @@ def write_daily_weather_horizontal(filename, debug = false) # for highcharts
   File.open(filename, "w") do |f|
     f.write(filestring)
     f.close
-  end 
+  end
 end
 
 def print_field_by_day(fieldnames, options = {}, filename = @full_path, debug = true)
