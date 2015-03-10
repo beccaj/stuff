@@ -7,6 +7,7 @@ module SleepMethods
   SLEEP = 1
   RESTLESS = 2
   AWAKE = 3
+  MIN_SLEEP = 20
 
   debug = false
 
@@ -53,7 +54,7 @@ module SleepMethods
 
       end
 
-      if end_sleep - start_sleep >= 30
+      if end_sleep - start_sleep >= MIN_SLEEP
         fell_asleep = start_sleep
         break
       end

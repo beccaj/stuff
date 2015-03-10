@@ -4,16 +4,16 @@ require 'open-uri'
 require 'net/http'
 require 'chronic'
 # CDT,Max TemperatureF,Mean TemperatureF,Min TemperatureF,Max Dew PointF,MeanDew PointF,Min DewpointF,Max Humidity, Mean Humidity, Min Humidity, Max Sea Level PressureIn, Mean Sea Level PressureIn, Min Sea Level PressureIn, Max VisibilityMiles, Mean VisibilityMiles, Min VisibilityMiles, Max Wind SpeedMPH, Mean Wind SpeedMPH, Max Gust SpeedMPH,PrecipitationIn, CloudCover, Events, WindDirDegrees
-# CST, ... wtf sometimes cst 
+# CST, ... wtf sometimes cst
 # http://www.wunderground.com/history/airport/katt/2014/7/2/DailyHistory.html
-# 
+#
 class WeatherUtils
 	attr_accessor :airport, :filepath
 
 	def initialize(airport = "KATT", filepath = "data")
 		@airport = airport
 		@directory = filepath
-	end	
+	end
 
 	def get_temperature_at_time(date)
 		# begin
@@ -43,7 +43,7 @@ class WeatherUtils
 		data.each_with_index do |row, index|
 			next if row.empty?
 			timestring = "#{date.strftime('%Y/%m/%d')} "
-			
+
 			if row['TimeCDT']  # TODO should just fix this when downloading. Goddammit wunderground
 				timestring << row['TimeCDT']
 			elsif row['TimeCST']
@@ -75,19 +75,23 @@ class WeatherUtils
 		end
 			raise "No row for date #{date} low_index: #{low_index} high_index: #{high_index}" if best_row.empty?
 			best_row
-	end	
+	end
 
 	def data_for_year(year)
-		filename = filename_for_year(year)		
+		filename = filename_for_year(year)
 		filestring = File.read("#{@directory}/#{filename}")
 		CSV.parse(filestring, headers: true)
 	end
 
 # TimeCDT,TemperatureF,Dew PointF,Humidity,Sea Level PressureIn,VisibilityMPH,Wind Direction,Wind SpeedMPH,Gust SpeedMPH,PrecipitationIn,Events,Conditions,WindDirDegrees,DateUTC
 	def data_for_day(date)
-		filename = filename_for_day(date)		
+		begin
+		filename = filename_for_day(date)
 		filestring = File.read("#{@directory}/#{filename}")
 		CSV.parse(filestring, headers: true)
+	rescue Exception => e
+		puts e
+	end
 	end
 
 
@@ -98,7 +102,7 @@ class WeatherUtils
 
 	# def filename_for_day(year, month, day)
 	# 	"#{airport}-#{year}#{month}#{day}.txt"
-	# end	
+	# end
 
 	def filename_for_year(date)
 		year = date.respond_to?(:year) ? date.year : date
@@ -128,7 +132,7 @@ class WeatherUtils
 				sleep 1
 			end
 
-			start_date += 1 
+			start_date += 1
 		end
 	end
 

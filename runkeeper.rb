@@ -24,6 +24,7 @@ include RunkeeperHelper
 
 @start_date = DateTime.parse("2013/12/16")
 @end_date = DateTime.now #DateTime.parse("2014/6/17")
+@activity_url = "http://runkeeper.com/user/1249271122/activitylist"
 
 def login_runkeeper(url="http://runkeeper.com/exportDataForm", agent)
   page = agent.get(url)
@@ -43,6 +44,15 @@ def login_runkeeper(url="http://runkeeper.com/exportDataForm", agent)
   password_field.value = "sophiesky"
 
   page = agent.submit(form)
+end
+
+def activity_page
+  url = "http://runkeeper.com/user/1249271122/activitylist"
+  agent = Mechanize.new
+  page = login_runkeeper(url, agent)
+
+  File.write("ACTIVITY.html", page)
+
 end
 
 def refresh_files(force=false)
@@ -124,17 +134,7 @@ def get_data(filename = "#{@path}/#{@filename}")
   data = CSV.parse(file_string, {:headers=> true})
 end
 
-def get_mondays(start_date, end_date)
-  date = start_date
-  dates = []
 
-  while date <= end_date
-    dates << date if date.monday?
-    date += 1
-  end
-
-  dates
-end
 
 def parse_file(filename = "#{@path}/#{@filename}", debug=false)
   data = get_data(filename)
@@ -476,6 +476,6 @@ begin
 rescue Exception => e
   puts e
 end
-write_by_week("/Users/rebeccag/Desktop/run_detailed.csv") # this is the one I usually want
+# write_by_week("/Users/rebeccag/Desktop/run_detailed.csv") # this is the one I usually want
 
 

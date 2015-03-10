@@ -235,26 +235,7 @@ def get_mondays(start_date, end_date)
   (start_date..end_date).select {|x| x.monday?}
 end
 
-def date_hash(csv)
-  headers = csv.headers
-  key = headers.delete headers.first
-  # headers.delete("Date")
 
-  final_hash = {"headers" => headers}
-
-  csv.each do |line|
-    hash = {}
-    date = line[key]
-
-    headers.each do |field|
-      hash[field] = line[field]
-    end
-
-    final_hash[date] = hash
-  end
-
-  final_hash
-end
 
 def write_weekly(opts = {})
   dir = opts[:directory] || @data_dir
@@ -287,7 +268,16 @@ def write_weekly(opts = {})
 
         puts "\n\n#{format_date(monday)}" if debug
         ave_hash.each {|k,v| puts "#{k}: #{v.values.join(' + ')} average: #{v.average}"} if debug
-      line << [format_date(monday)].concat(fields.map {|f| round_to_quarter ave_hash[f].average})
+      line << [format_date(monday)].concat(fields.map do |f|
+        case f
+        when "Steps", "Calories Burned"
+          ave_hash[f].average.round
+        when "Body Fat"
+          ave_hash[f].average.round(1)
+        else
+          round_to_quarter ave_hash[f].average
+        end
+      end)
     end
   end
 

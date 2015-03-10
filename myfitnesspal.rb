@@ -1,9 +1,14 @@
 require 'net/http'
 require 'rubygems'
-require 'nokogiri'     
+require 'nokogiri'
 require 'open-uri'
 require 'date'
 require 'mechanize'
+require 'csv'
+require 'rails'
+require_relative 'runkeeper_helper'
+include RunkeeperHelper
+
 
 # url = "http://www.myfitnesspal.com/food/diary/arachne538?date=2013-07-14"
 # uri = URI.parse(url)
@@ -18,6 +23,10 @@ require 'mechanize'
 BASE_FILEPATH = "/Users/rebeccag/stuff/"
 FOOD_FOLDER = "files-myfitnesspal/"
 MEASUREMENT_FOLDER = "measurements/"
+
+@start_date = Date.new(2015,1,1)
+@end_date = Date.yesterday
+
 def download_files
 	start_date = Date.today-30
 	end_date = Date.today-1 # might not be done for today
@@ -28,18 +37,18 @@ def download_files
 		datestr = date.strftime('%Y-%m-%d')
 		filename = "#{FOOD_FOLDER}food-#{datestr}.html"
 
-		next if File.exist?(filename)	
+		next if File.exist?(filename)
 
-		url = "http://www.myfitnesspal.com/food/diary/arachne538?date=#{datestr}"	
+		url = "http://www.myfitnesspal.com/food/diary/arachne538?date=#{datestr}"
 		page = nil
 		puts "Opening url #{url}"
-	  open(url) { |f| 
+	  open(url) { |f|
 			page = f.read
 		}
 
 		puts "Writing #{filename}"
     File.write(filename, page)
-    date = date + 1 
+    date = date + 1
   end
 end
 
@@ -58,7 +67,7 @@ def download_measurements
 	agent = Mechanize.new
 
 	(1..5).each do |i| # TODO will eventually have > 5 pages, should change this to a while loop
-		url = "http://www.myfitnesspal.com/measurements/edit?page=#{i}&type=1"		
+		url = "http://www.myfitnesspal.com/measurements/edit?page=#{i}&type=1"
 		url = "http://www.myfitnesspal.com/measurements/edit?type=1" if i == 1
 
 		page = agent.get(url)
@@ -69,7 +78,7 @@ def download_measurements
 			form.username = "arachne538"
 			form.password = "sophiesky"
 
-			page = agent.submit(form)			
+			page = agent.submit(form)
 		end
 
 
@@ -84,32 +93,15 @@ end
 def make_measurement_csv
 end
 
-
-def make_food_csv
-	# url = "http://www.myfitnesspal.com/food/diary/arachne538"
-	data = []
+def print_averages_old
+	csv = CSV.parse(File.read("calories.csv"), headers: true)
 	orig_calories = []
-	all_calories = [] 
-
-	files = Dir.entries(FOOD_FOLDER).select {|f| !File.directory? f}
-
-	files.each do |file|
-		next unless /\d\d\d\d-\d\d-\d\d/.match(file)
-		date = /\d\d\d\d-\d\d-\d\d/.match(file)[0]
-		# url = "http://www.myfitnesspal.com/food/diary/arachne538?date=2013-07-25"
-		page = Nokogiri::HTML(File.open("#{FOOD_FOLDER}#{file}"))
-		if page != nil
-			row = page.css('tr.total')[0]
-			if row != nil
-				cells = row.css('td')
-				calories = cells[1].text.gsub(",","").to_i
-
-				orig_calories << [date, calories] if calories > 1000 #and calories < 2200
-			end
-		end
-
-
+	csv.each do |line|
+		date = line["Date"]
+		calories = line["Calories"].to_f
+		orig_calories << [date, calories] if calories > 1000 #and calories < 2200
 	end
+
 
 	orig_calories.sort! {|x,y| x[0] <=> y[0]}
 
@@ -129,13 +121,130 @@ def make_food_csv
 
 	puts "\n** Average calories of entire period: #{average}"
 	puts "\tmax calories: #{orig_calories.max{|x,y| x[1] <=> y[1]}}"
-	puts "\tmin calories: #{orig_calories.min{|x,y| x[1] <=> y[1]}}"		
+	puts "\tmin calories: #{orig_calories.min{|x,y| x[1] <=> y[1]}}"
+
+end
+
+def make_food_csv
+	# url = "http://www.myfitnesspal.com/food/diary/arachne538"
+	data = []
+	orig_calories = []
+	all_calories = []
+
+	files = Dir.entries(FOOD_FOLDER).select {|f| !File.directory? f}.sort
+
+	csv = CSV.generate do |line|
+		line << [
+			"Date",
+			"Calories",
+			"Carbs",
+			"Fat",
+			"Protein",
+			"Carbs %",
+			"Fat %",
+			"Protein %"
+		]
+
+		files.each do |file|
+			next unless /\d\d\d\d-\d\d-\d\d/.match(file)
+			date = /\d\d\d\d-\d\d-\d\d/.match(file)[0]
+			# url = "http://www.myfitnesspal.com/food/diary/arachne538?date=2013-07-25"
+			page = Nokogiri::HTML(File.open("#{FOOD_FOLDER}#{file}"))
 
 
+			if page != nil
+				row = page.css('tr.total')[0]
+				if row != nil
+					cells = row.css('td')
+					calories = cells[1].text.gsub(",","").to_i
+					carbs = cells[2].text.gsub(",","").to_i
+					fat = cells[3].text.gsub(",","").to_i
+					protein = cells[4].text.gsub(",","").to_i
+
+					carb_percent = 0
+					fat_percent = 0
+					protein_percent = 0
+
+
+					if calories && calories > 0
+						carb_percent = (carbs*4.0*100/calories.to_f).round
+						fat_percent = (fat*9.0*100/calories.to_f).round
+						protein_percent = (protein*4.0*100/calories.to_f).round
+					end
+
+					# the percents don't add for a lot of days. Uncomment this to look into it.
+					# total_percent = carb_percent + fat_percent + protein_percent
+					# puts "#{date}: #{total_percent}" if total_percent < 95 && total_percent > 0
+
+					line << [
+						date,
+						calories,
+						carbs,
+						fat,
+						protein,
+						carb_percent,
+						fat_percent,
+						protein_percent
+					]
+
+				end
+			end
+		end
+	end
+
+
+
+	puts "Writing calories.csv"
+	File.write("calories.csv", csv)
 
 	# orig_calories.map {|c| puts "Total calories for #{c[0]}: #{c[1]}"}
 end
-	
-download_files	# do once
+
+def write_weekly_csv
+	filename = "weekly_calories.csv"
+	data = date_hash CSV.parse(File.read("calories.csv"), {:headers=> true})
+  fields = data["headers"]
+
+	csv = CSV.generate do |line|
+		line << ["Date"].concat(fields)
+    ave = MovingAverage.new(7)
+    ave_hash = {}
+    current_ave = MovingAverage.new(7)
+
+		get_mondays(@start_date, @end_date).each do |monday|
+	    fields.each {|f| ave_hash[f] = MovingAverage.new(7)}
+
+			(monday..(monday+6)).each do |date|
+				row = data[date.strftime("%Y-%m-%d")]
+				if row
+          fields.each {|f| ave_hash[f].add(row[f].to_f) if row[f].to_f > 0}
+          current_ave.add(row['Calories'].to_f) if row['Calories'].to_f > 0
+				end
+			end
+
+			line << [format_date(monday)].concat(fields.map do |f|
+				ave_hash[f].average.round
+			end)
+			if monday.beginning_of_day == Date.current.beginning_of_week.beginning_of_day
+				puts "Current week: #{ave_hash['Calories'].average}"
+				puts "Last 7 days: #{current_ave.average.round}"
+			end
+
+		end
+	end
+	puts "Writing #{filename}"
+	File.write(filename, csv)
+
+
+
+end
+
+download_files
 # download_measurements # do once
 make_food_csv
+write_weekly_csv
+
+# print_averages_old
+
+
+

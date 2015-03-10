@@ -135,4 +135,37 @@ module RunkeeperHelper
 		end
 		stat_hash
 	end
+
+	def date_hash(csv)
+	  headers = csv.headers
+	  key = headers.delete headers.first
+	  # headers.delete("Date")
+
+	  final_hash = {"headers" => headers}
+
+	  csv.each do |line|
+	    hash = {}
+	    date = line[key]
+
+	    headers.each do |field|
+	      hash[field] = line[field]
+	    end
+
+	    final_hash[date] = hash
+	  end
+
+	  final_hash
+	end
+
+def get_mondays(start_date, end_date)
+  date = start_date
+  dates = []
+
+  while date <= end_date
+    dates << date if date.monday?
+    date += 1
+  end
+
+  dates
+end
 end

@@ -1,0 +1,19 @@
+{
+  "body": {
+    "bicep": 0,
+    "bmi": 20.29,
+    "calf": 0,
+    "chest": 0,
+    "fat": 18.3,
+    "forearm": 0,
+    "hips": 0,
+    "neck": 0,
+    "thigh": 0,
+    "waist": 0,
+    "weight": 114.6
+  },
+  "goals": {
+    "fat": 18,
+    "weight": 107
+  }
+}
