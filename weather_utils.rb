@@ -3,6 +3,7 @@ require 'csv'
 require 'open-uri'
 require 'net/http'
 require 'chronic'
+require 'rest-client' # doesn't throw weird header error
 # CDT,Max TemperatureF,Mean TemperatureF,Min TemperatureF,Max Dew PointF,MeanDew PointF,Min DewpointF,Max Humidity, Mean Humidity, Min Humidity, Max Sea Level PressureIn, Mean Sea Level PressureIn, Min Sea Level PressureIn, Max VisibilityMiles, Mean VisibilityMiles, Min VisibilityMiles, Max Wind SpeedMPH, Mean Wind SpeedMPH, Max Gust SpeedMPH,PrecipitationIn, CloudCover, Events, WindDirDegrees
 # CST, ... wtf sometimes cst
 # http://www.wunderground.com/history/airport/katt/2014/7/2/DailyHistory.html
@@ -140,7 +141,8 @@ class WeatherUtils
 		url = get_day_url(date)
 	  uri = URI.parse(url)
 	  puts "URL: #{url}"
-		filestring = uri.read
+		# filestring = uri.read
+		filestring = RestClient.get url
 		filestring = filestring.gsub("<br />", "")
 
 		filepath = full_filepath(filename_for_day(date))

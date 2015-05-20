@@ -58,6 +58,14 @@ module RunkeeperHelper
 		def -(other)
 			self.average - other.to_f
 		end
+
+		def length
+			@queue.length
+		end
+
+		def size
+			@queue.length
+		end
 	end
 
 	def get_data(filename)
@@ -90,6 +98,10 @@ module RunkeeperHelper
 	def format_round_to_quarter(n)
 		x = round_to_quarter(n)
 		sprintf("%g", x)
+	end
+
+	def myfitnesspal_date(date)
+		date.strftime("%Y-%m-%d")
 	end
 
 	def string_to_float(value, field="Duration")
@@ -136,6 +148,7 @@ module RunkeeperHelper
 		stat_hash
 	end
 
+	# fitbit_csv = date_hash CSV.parse(File.open(FITBIT_PATH), {headers: true}) # needs headers: true
 	def date_hash(csv)
 	  headers = csv.headers
 	  key = headers.delete headers.first
@@ -157,15 +170,7 @@ module RunkeeperHelper
 	  final_hash
 	end
 
-def get_mondays(start_date, end_date)
-  date = start_date
-  dates = []
-
-  while date <= end_date
-    dates << date if date.monday?
-    date += 1
-  end
-
-  dates
-end
+	def get_mondays(start_date, end_date)
+		(start_date..end_date).select(&:monday?)
+	end
 end

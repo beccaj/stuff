@@ -12,6 +12,7 @@ require 'open-uri'
 require 'mechanize'
 
 require 'zip'
+
 # require 'datetime'
 
 # Date  Type  Route Name  Distance (mi) Duration  Average Pace  Average Speed (mph) Calories Burned Climb (ft)  Average Heart Rate (bpm)  Notes GPX File
@@ -140,19 +141,20 @@ def parse_file(filename = "#{@path}/#{@filename}", debug=false)
   data = get_data(filename)
   date = DateTime.parse(data.first['Date'])
   total = 0
-  week = date.cweek
+  week = format_date(date.beginning_of_week) #date.cweek
   totals = {}
 
-  # TODO will this work once I've been running more than a year?
-  (1..52).map {|x| totals[x] = {total: 0, longest: 0}}
+  # TODO will this work once I've been running more than a year? NO.
+  # (1..52).map {|x| totals[x] = {total: 0, longest: 0}}
   data.each do |row|
     date = DateTime.parse(row['Date'])
+    datestring = format_date(date)
 
-    if date.cweek != week
+    if format_date(date.beginning_of_week) != week
       puts "Total: #{total.round(2)}" if debug
       puts "\n\n" if debug
       total = 0
-      week = date.cweek
+      week = format_date(date.beginning_of_week) #date.cweek
     end
 
     if row['Type'] == "Running"
@@ -160,12 +162,14 @@ def parse_file(filename = "#{@path}/#{@filename}", debug=false)
       # distance = 0 if @bad_dates.include?(format_date(date))
       total += distance
       datestring = date.strftime("%A, %m/%d/%Y")
-      totals[date.cweek][:total] = totals[date.cweek][:total] + distance
-      totals[date.cweek][:longest] = distance if distance > totals[date.cweek][:longest]
-      puts "#{datestring}: #{distance} #{date.cweek}" if debug
+      totals[week] ||= {total: 0, longest: 0}
+      totals[week][:total] += distance #= totals[datestring][:total] + distance
+      totals[week][:longest] = distance if distance > totals[week][:longest]
+      puts "#{datestring}: #{distance} week: #{week}" if debug
     end
   end
 
+  puts "totals for parse_file:\n#{totals}" if debug
   totals
 end
 
@@ -174,34 +178,20 @@ end
 def parse_file_by_day(filename = "#{@path}/#{@filename}", debug=false)
   data = get_data(filename)
   date = DateTime.parse(data.first['Date'])
-  # total = 0
-  # week = date.cweek
-  # totals = {}
+
   days = {}
-  # (1..52).map {|x| totals[x] = {total: 0, longest: 0}}
+
   data.each do |row|
     date = DateTime.parse(row['Date'])
 
-    # if date.cweek != week
-    #   puts "Total: #{total.round(2)}" if debug
-    #   puts "\n\n" if debug
-    #   total = 0
-    #   week = date.cweek
-    # end
-
     if row['Type'] == "Running"
       distance = row['Distance (mi)'].to_f
-      # distance = 0 if @bad_dates.include?(format_date(date))
-      # total += distance
-      datestring = format_date(date)#date.strftime("%A, %m/%d/%Y")
-      # totals[date.cweek][:total] = totals[date.cweek][:total] + distance
-      # totals[date.cweek][:longest] = distance if distance > totals[date.cweek][:longest]
-      puts "#{datestring}: #{distance} #{date.cweek}" if debug
+      datestring = format_date(date)
+      puts "#{datestring}: #{distance}" if debug
       days[datestring] ||= distance
     end
   end
 
-  # totals
   days
 end
 
@@ -220,7 +210,8 @@ def write_weekly(filename, debug = false)
 
   filestring = ""
   dates.each do |date|
-    week = totals[date.cweek]
+    datestring = format_date(date)
+    week = totals[datestring]
     percent = week[:total] && week[:total] > 0 ? (week[:longest]/week[:total] * 100).round(1) : 0
     filestring << "#{format_date(date)},#{format_round_to_half(week[:total])},#{format_round_to_half(week[:longest])},#{percent}%\n"
   end
@@ -230,10 +221,10 @@ end
 
 def write_by_week(filename, debug = false)
   days = parse_file_by_day("#{@path}/#{@filename}")
-  weeks = parse_file("#{@path}/#{@filename}")
+  weeks = parse_file("#{@path}/#{@filename}", debug)
 
   date = @start_date
-  week = @start_date.cweek
+  week = format_date(date.beginning_of_week) #@start_date.cweek
 
   num_weeks_for_ave = 4
 
@@ -249,7 +240,7 @@ def write_by_week(filename, debug = false)
   while(date <= @end_date)
     filestring << "#{format_date(date)},,"
 
-    while(week == date.cweek)
+    while(week == format_date(date.beginning_of_week))
       datestring = format_date(date)
       miles = days[datestring] ? days[datestring].to_f : 0
       # puts "#{pretty_date(date)}: #{miles} week #{date.cweek}"
@@ -262,6 +253,7 @@ def write_by_week(filename, debug = false)
       # puts "Total days: #{total_days} Total miles: #{total_miles} ave: #{format_round_to_half(total_miles/total_days)}" if total_days > 0
       # week = date.cweek
     end
+      weeks[week] ||= {total: 0.0, longest: 0.0}
       this_weeks_total = weeks[week][:total].to_f
       total_weeks += 1.0
       percent_increase = last_weeks_total != 0 ? ((this_weeks_total - last_weeks_total)*100/last_weeks_total).round(1) : 100.0
@@ -280,7 +272,7 @@ def write_by_week(filename, debug = false)
       # puts format_round_to_half(weeks[week][:total])
       # puts "\n\n"
       # date = date + 1
-      week = date.cweek
+      week = format_date(date.beginning_of_week) #date.cweek
   end
 
   puts filestring if debug
@@ -476,6 +468,6 @@ begin
 rescue Exception => e
   puts e
 end
-# write_by_week("/Users/rebeccag/Desktop/run_detailed.csv") # this is the one I usually want
+write_by_week("/Users/rebeccag/Desktop/run_detailed.csv") # this is the one I usually want
 
 

@@ -26,7 +26,12 @@ MEASUREMENT_FOLDER = "measurements/"
 
 @start_date = Date.new(2015,1,1)
 @end_date = Date.yesterday
+@calorie_goal = 1700
 
+def myfitnesspal_link(date)
+	datestr = date.strftime('%Y-%m-%d')
+	"http://www.myfitnesspal.com/food/diary/arachne538?date=#{datestr}"
+end
 def download_files
 	start_date = Date.today-30
 	end_date = Date.today-1 # might not be done for today
@@ -39,7 +44,7 @@ def download_files
 
 		next if File.exist?(filename)
 
-		url = "http://www.myfitnesspal.com/food/diary/arachne538?date=#{datestr}"
+		url = myfitnesspal_link(date)
 		page = nil
 		puts "Opening url #{url}"
 	  open(url) { |f|
@@ -99,7 +104,7 @@ def print_averages_old
 	csv.each do |line|
 		date = line["Date"]
 		calories = line["Calories"].to_f
-		orig_calories << [date, calories] if calories > 1000 #and calories < 2200
+		orig_calories << [date, calories] if valid_calorie_amount(calories) # > 1000 #and calories < 2200
 	end
 
 
@@ -142,7 +147,8 @@ def make_food_csv
 			"Protein",
 			"Carbs %",
 			"Fat %",
-			"Protein %"
+			"Protein %",
+			"Link"
 		]
 
 		files.each do |file|
@@ -166,13 +172,15 @@ def make_food_csv
 					protein_percent = 0
 
 
-					if calories && calories > 0
-						carb_percent = (carbs*4.0*100/calories.to_f).round
-						fat_percent = (fat*9.0*100/calories.to_f).round
-						protein_percent = (protein*4.0*100/calories.to_f).round
+					if valid_calorie_amount calories # && calories > 0
+						macro_calories = carbs*4.0 + fat*9.0 + protein*4.0 # make them add to 100%
+						carb_percent = (carbs*4.0*100/macro_calories.to_f).round
+						fat_percent = (fat*9.0*100/macro_calories.to_f).round
+						protein_percent = (protein*4.0*100/macro_calories.to_f).round
 					end
 
-					# the percents don't add for a lot of days. Uncomment this to look into it.
+					# the percents don't add for a lot of days.
+					# Uncomment this and change macro_calories to calories ^ to look into it.
 					# total_percent = carb_percent + fat_percent + protein_percent
 					# puts "#{date}: #{total_percent}" if total_percent < 95 && total_percent > 0
 
@@ -184,7 +192,8 @@ def make_food_csv
 						protein,
 						carb_percent,
 						fat_percent,
-						protein_percent
+						protein_percent,
+						myfitnesspal_link(Date.parse(date))
 					]
 
 				end
@@ -217,8 +226,9 @@ def write_weekly_csv
 			(monday..(monday+6)).each do |date|
 				row = data[date.strftime("%Y-%m-%d")]
 				if row
+					next unless valid_calorie_amount(row['Calories'].to_f)
           fields.each {|f| ave_hash[f].add(row[f].to_f) if row[f].to_f > 0}
-          current_ave.add(row['Calories'].to_f) if row['Calories'].to_f > 0
+          current_ave.add(row['Calories'].to_f) if valid_calorie_amount(row['Calories'].to_f) # row['Calories'].to_f > 0
 				end
 			end
 
@@ -226,17 +236,25 @@ def write_weekly_csv
 				ave_hash[f].average.round
 			end)
 			if monday.beginning_of_day == Date.current.beginning_of_week.beginning_of_day
-				puts "Current week: #{ave_hash['Calories'].average}"
-				puts "Last 7 days: #{current_ave.average.round}"
+				this_week_ave = ave_hash['Calories'].average.round
+				last_seven_days = current_ave.average.round
+				days_into_week = ave_hash['Calories'].length
+
+				puts "Calorie goal: #{@calorie_goal}"
+				puts "Current week: #{this_week_ave}"
+				puts "Total calories over for this week: #{(this_week_ave - @calorie_goal) * days_into_week}"
+				puts "Last 7 days: #{last_seven_days}"
+				puts "Total calories over for last 7 days: #{(last_seven_days - @calorie_goal) * 7}"
 			end
 
 		end
 	end
 	puts "Writing #{filename}"
 	File.write(filename, csv)
+end
 
-
-
+def valid_calorie_amount(calories)
+	calories && calories.to_f > 1100
 end
 
 download_files
