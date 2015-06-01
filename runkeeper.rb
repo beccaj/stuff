@@ -253,24 +253,18 @@ def write_by_week(filename, debug = false)
       "Ave Weekly Total"
     ]
 
-    while(date <= @end_date)
-      # filestring << "#{format_date(date)},,"
-      line = []
-      line << "#{format_date(date)}"
-      line << ""
+    week_hash = days_of_week.inject({}) {|hash, day| hash[day.downcase.to_sym] = nil; hash}
 
+    while(date <= @end_date)
       while(week == format_date(date.beginning_of_week))
         datestring = format_date(date)
         miles = days[datestring] ? days[datestring].to_f : 0
-        # puts "#{pretty_date(date)}: #{miles} week #{date.cweek}"
 
-        # filestring << "#{miles > 0 ? format_round_to_quarter(miles) : ''},"
-        line << "#{miles > 0 ? format_round_to_quarter(miles) : ''}"
+        week_hash[day_of_week(date).downcase.to_sym] = "#{miles > 0 ? format_round_to_quarter(miles) : ''}"
+
         date = date + 1
         total_days += 1.0 if miles > 0
         total_miles += round_to_half(miles) # TODO use exact?
-        # puts "Total days: #{total_days} Total miles: #{total_miles} ave: #{format_round_to_half(total_miles/total_days)}" if total_days > 0
-        # week = date.cweek
       end
 
       weeks[week] ||= {total: 0.0, longest: 0.0}
@@ -284,21 +278,26 @@ def write_by_week(filename, debug = false)
       moving_ave.add(this_weeks_total)
       last_four_weeks = format_round_to_quarter(moving_ave.average)
 
-      # filestring << "#{format_round_to_quarter(this_weeks_total)},#{percent_increase}%,#{longest},#{long_percent}%,#{last_four_weeks},#{ave_per_week}\n"
-      line << "#{format_round_to_quarter(this_weeks_total)}"
-      line << "#{percent_increase}%"
-      line << "#{longest}"
-      line << "#{long_percent}%"
-      line << "#{last_four_weeks}"
-      line << "#{ave_per_week}"
+      csv << [
+        week,
+        "",
+        week_hash[:monday],
+        week_hash[:tuesday],
+        week_hash[:wednesday],
+        week_hash[:thursday],
+        week_hash[:friday],
+        week_hash[:saturday],
+        week_hash[:sunday],
+        "#{format_round_to_quarter(this_weeks_total)}",
+        "#{percent_increase}%",
+        "#{longest}",
+        "#{long_percent}%",
+        "#{last_four_weeks}",
+        "#{ave_per_week}"
+      ]
 
       last_weeks_total = weeks[week][:total].to_f
-
-      # puts format_round_to_half(weeks[week][:total])
-      # puts "\n\n"
-      # date = date + 1
-      week = format_date(date.beginning_of_week) #date.cweek
-      csv << line
+      week = format_date(date.beginning_of_week)
     end
   end
 
@@ -489,7 +488,7 @@ refresh_files # true # uncomment "true" to force a refresh. I usually don't want
 #   activity_types: ["Hiking"]
 #   })
 
-begin
+begin # To include weather, uncomment
   write_daily_weather("/Users/rebeccag/stuff/run_weather.csv") # I often want this
   write_weather_graph_csv # write_daily_weather before running this. This is to make an awesome graph!
 rescue Exception => e

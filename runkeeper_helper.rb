@@ -5,7 +5,6 @@ require "rails"
 module RunkeeperHelper
 
 
-
 # Date	Type	Route Name	Distance (mi)	Duration	Average Pace	Average Speed (mph)	Calories Burned	Climb (ft)	Average Heart Rate (bpm)	Notes	GPX File
 	class MovingAverage
 		def initialize(size)
@@ -173,4 +172,16 @@ module RunkeeperHelper
 	def get_mondays(start_date, end_date)
 		(start_date..end_date).select(&:monday?)
 	end
+
+	def days_of_week
+		days = Date::DAYNAMES.dup
+		days << days.delete(days.first)
+		days
+	end
+
+	def day_of_week(date)
+		date.strftime("%A")
+	end
 end
+
+
