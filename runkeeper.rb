@@ -234,25 +234,45 @@ def write_by_week(filename, debug = false)
   total_miles = 0.0
 
   moving_ave = MovingAverage.new(num_weeks_for_ave)
+  filestring = CSV.generate do |csv|
+    csv << [
+      "Date",
+      "Week",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday",
+      "Total",
+      "% Total Increase",
+      "Longest",
+      "Longest Percent",
+      "Last #{num_weeks_for_ave} weeks Total",
+      "Ave Weekly Total"
+    ]
 
-  filestring = "Date,Week,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday,Total,% Total Increase,Longest,Longest Percent,Last #{num_weeks_for_ave} weeks Total,Ave Weekly Total\n"
+    while(date <= @end_date)
+      # filestring << "#{format_date(date)},,"
+      line = []
+      line << "#{format_date(date)}"
+      line << ""
 
-  while(date <= @end_date)
-    filestring << "#{format_date(date)},,"
+      while(week == format_date(date.beginning_of_week))
+        datestring = format_date(date)
+        miles = days[datestring] ? days[datestring].to_f : 0
+        # puts "#{pretty_date(date)}: #{miles} week #{date.cweek}"
 
-    while(week == format_date(date.beginning_of_week))
-      datestring = format_date(date)
-      miles = days[datestring] ? days[datestring].to_f : 0
-      # puts "#{pretty_date(date)}: #{miles} week #{date.cweek}"
+        # filestring << "#{miles > 0 ? format_round_to_quarter(miles) : ''},"
+        line << "#{miles > 0 ? format_round_to_quarter(miles) : ''}"
+        date = date + 1
+        total_days += 1.0 if miles > 0
+        total_miles += round_to_half(miles) # TODO use exact?
+        # puts "Total days: #{total_days} Total miles: #{total_miles} ave: #{format_round_to_half(total_miles/total_days)}" if total_days > 0
+        # week = date.cweek
+      end
 
-      filestring << "#{miles > 0 ? format_round_to_quarter(miles) : ''},"
-
-      date = date + 1
-      total_days += 1.0 if miles > 0
-      total_miles += round_to_half(miles) # TODO use exact?
-      # puts "Total days: #{total_days} Total miles: #{total_miles} ave: #{format_round_to_half(total_miles/total_days)}" if total_days > 0
-      # week = date.cweek
-    end
       weeks[week] ||= {total: 0.0, longest: 0.0}
       this_weeks_total = weeks[week][:total].to_f
       total_weeks += 1.0
@@ -263,16 +283,23 @@ def write_by_week(filename, debug = false)
 
       moving_ave.add(this_weeks_total)
       last_four_weeks = format_round_to_quarter(moving_ave.average)
-      # filestring << "#{format_round_to_half(weeks[week][:total])},#{format_round_to_half(weeks[week][:longest])}\n"
 
+      # filestring << "#{format_round_to_quarter(this_weeks_total)},#{percent_increase}%,#{longest},#{long_percent}%,#{last_four_weeks},#{ave_per_week}\n"
+      line << "#{format_round_to_quarter(this_weeks_total)}"
+      line << "#{percent_increase}%"
+      line << "#{longest}"
+      line << "#{long_percent}%"
+      line << "#{last_four_weeks}"
+      line << "#{ave_per_week}"
 
-      filestring << "#{format_round_to_quarter(this_weeks_total)},#{percent_increase}%,#{longest},#{long_percent}%,#{last_four_weeks},#{ave_per_week}\n"
       last_weeks_total = weeks[week][:total].to_f
 
       # puts format_round_to_half(weeks[week][:total])
       # puts "\n\n"
       # date = date + 1
       week = format_date(date.beginning_of_week) #date.cweek
+      csv << line
+    end
   end
 
   puts filestring if debug
