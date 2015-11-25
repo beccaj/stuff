@@ -166,7 +166,7 @@ def write_csvs(opts = {})
   puts "Writing #{csv_name}"
 
   filestring = CSV.generate do |csv|
-    csv << ["Date", "Weight", "Body Fat", "Lean Mass", "Sleep Minutes", "Sleep Time", "Fell Asleep At", "Steps", "Calories Burned", "Sedentary Minutes", "Lightly Active Minutes", "Fairly Active Minutes", "Very Active Minutes"]
+    csv << ["Date", "Weight", "Body Fat", "Lean Mass", "Sleep Minutes", "Sleep Time", "Went to Bed At", "Fell Asleep At", "Steps", "Calories Burned", "Sedentary Minutes", "Lightly Active Minutes", "Fairly Active Minutes", "Very Active Minutes"]
 
     (start_date..end_date).each do |date|
       pretty_date = date.strftime("%-m/%-d/%Y")
@@ -195,6 +195,7 @@ def write_csvs(opts = {})
 
       total_minutes = hash["summary"]["totalMinutesAsleep"].to_i
 
+      bed_at = hash["sleep"].first.try(:[], "startTime").to_s.scan(/T.*/).last.to_s.gsub("T", "").gsub(/\..*/, "")
       slept_at = fell_asleep_at hash["sleep"]
 
       hours = total_minutes / 60
@@ -205,6 +206,7 @@ def write_csvs(opts = {})
       pretty_date = date.strftime("%-m/%-d/%Y")
       line << total_minutes
       line << pretty_minutes
+      line << "#{bed_at}"
       line << "#{slept_at}"
 
       # STEPS

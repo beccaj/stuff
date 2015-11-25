@@ -95,8 +95,6 @@ class WeatherUtils
 	end
 	end
 
-
-
 	def filename_for_day(date)
 		"#{airport}-#{date.strftime("%Y%m%d")}.txt"
 	end
@@ -106,7 +104,7 @@ class WeatherUtils
 	# end
 
 	def filename_for_year(date)
-		year = date.respond_to?(:year) ? date.year : date
+		year = date.is_a?(Date) ? date.year : date
 		"#{@airport}-#{year}.txt"
 	end
 
@@ -115,14 +113,15 @@ class WeatherUtils
 	end
 
 	def get_year_url(date)
-		start_year = date.respond_to?(:year) ? date.year : date
+		start_year = date.is_a?(Date) ? date.year : date
 		start_month = 1
 		start_day = 1
 
 		end_year = start_year
 		end_month = 12
 		end_day = 31
-		"http://www.wunderground.com/history/airport/#{@airport}/#{start_year}/#{start_month}/#{start_day}/CustomHistory.html?dayend=#{end_day}&monthend=#{end_month}&yearend=#{end_year}&req_city=NA&req_state=NA&req_statename=NA&format=1"
+		"http://www.wunderground.com/history/airport/#{@airport}/#{start_year}/#{start_month}/#{start_day}/CustomHistory.html?dayend=#{end_day}&monthend=#{end_month}&yearend=#{end_year}&req_city=NA&req_state=NA&req_statename=NA&format=1" # old
+		# "http://www.wunderground.com/history/airport/#{@airport}/#{start_year}/#{start_month}/#{start_day}/CustomHistory.html?dayend=#{end_day}&monthend=#{end_month}&yearend=#{end_year}&req_city=&req_state=&req_statename=&reqdb.zip=&reqdb.magic=&reqdb.wmo=&format=1"
 	end
 
 
@@ -156,6 +155,7 @@ class WeatherUtils
 
 	def download_file_for_year(year)
 		url = get_year_url(year)
+		puts "URL: #{url}"
 	  uri = URI.parse(url)
 		filestring = Net::HTTP.get(uri)
 		filestring = filestring.gsub("<br />", "")

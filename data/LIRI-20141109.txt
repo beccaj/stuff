@@ -1,0 +1,8 @@
+
+TimeCET,TemperatureF,Dew PointF,Humidity,Sea Level PressureIn,VisibilityMPH,Wind Direction,Wind SpeedMPH,Gust SpeedMPH,PrecipitationIn,Events,Conditions,WindDirDegrees,DateUTC
+9:10 AM,64.4,59.0,83,29.95,6.2,Calm,Calm,-,N/A,,Mostly Cloudy,0,2014-11-09 08:10:00
+9:50 AM,68.0,57.2,68,29.95,6.2,ESE,4.6,-,N/A,,Mostly Cloudy,120,2014-11-09 08:50:00
+10:50 AM,66.2,59.0,78,29.98,6.2,Calm,Calm,-,N/A,,Mostly Cloudy,0,2014-11-09 09:50:00
+11:50 AM,68.0,59.0,73,29.95,6.2,Calm,Calm,-,N/A,,Scattered Clouds,0,2014-11-09 10:50:00
+1:50 PM,64.4,57.2,77,29.95,6.2,Calm,Calm,-,N/A,,Scattered Clouds,0,2014-11-09 12:50:00
+3:50 PM,66.2,57.2,73,29.98,6.2,Calm,Calm,-,N/A,,Scattered Clouds,0,2014-11-09 14:50:00

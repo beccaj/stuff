@@ -27,10 +27,10 @@ include RunkeeperHelper
 @end_date = DateTime.now #DateTime.parse("2014/6/17")
 @activity_url = "http://runkeeper.com/user/1249271122/activitylist"
 
-def login_runkeeper(url="http://runkeeper.com/exportDataForm", agent)
+def login_runkeeper(url="https://runkeeper.com/exportDataForm", agent)
   page = agent.get(url)
 
-  form = page.form_with(id: "lightBoxLogInForm")
+  form = page.form_with(name: "lightBoxLogInForm")
   unless form
     puts "It appears we're already logged in..."
     return page # assume that we're already logged in...
@@ -39,8 +39,11 @@ def login_runkeeper(url="http://runkeeper.com/exportDataForm", agent)
   form.name = "rebeccarosegoodwin@gmail.com"
   form.password = "sophiesky"
 
-  password_field = form.field_with(id: "passwordInput")
-  username_field = form.field_with(id: "emailInput")
+  # password_field = form.field_with(id: "passwordInput")
+  # username_field = form.field_with(id: "emailInput")
+
+  password_field = form.field_with(name: "password")
+  username_field = form.field_with(name: "email")
   username_field.value = "rebeccarosegoodwin@gmail.com"
   password_field.value = "sophiesky"
 

@@ -1,0 +1,53 @@
+{
+  "activities": [
+
+  ],
+  "goals": {
+    "activeMinutes": 30,
+    "caloriesOut": 2123,
+    "distance": 5,
+    "steps": 10000
+  },
+  "summary": {
+    "activeScore": -1,
+    "activityCalories": 1333,
+    "caloriesBMR": 1218,
+    "caloriesOut": 2337,
+    "distances": [
+      {
+        "activity": "total",
+        "distance": 8.34
+      },
+      {
+        "activity": "tracker",
+        "distance": 8.34
+      },
+      {
+        "activity": "loggedActivities",
+        "distance": 0
+      },
+      {
+        "activity": "veryActive",
+        "distance": 5.79
+      },
+      {
+        "activity": "moderatelyActive",
+        "distance": 0.47
+      },
+      {
+        "activity": "lightlyActive",
+        "distance": 2.08
+      },
+      {
+        "activity": "sedentaryActive",
+        "distance": 0
+      }
+    ],
+    "fairlyActiveMinutes": 16,
+    "lightlyActiveMinutes": 177,
+    "marginalCalories": 815,
+    "sedentaryMinutes": 634,
+    "steps": 20307,
+    "veryActiveMinutes": 137
+  }
+}
