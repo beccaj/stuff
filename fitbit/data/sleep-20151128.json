@@ -1,0 +1,121 @@
+{
+  "sleep": [
+    {
+      "awakeCount": 2,
+      "awakeDuration": 2,
+      "awakeningsCount": 5,
+      "dateOfSleep": "2015-11-28",
+      "duration": 1380000,
+      "efficiency": 88,
+      "isMainSleep": true,
+      "logId": 10267156658,
+      "minuteData": [
+        {
+          "dateTime": "23:58:00",
+          "value": "2"
+        },
+        {
+          "dateTime": "23:59:00",
+          "value": "3"
+        },
+        {
+          "dateTime": "00:00:00",
+          "value": "2"
+        },
+        {
+          "dateTime": "00:01:00",
+          "value": "2"
+        },
+        {
+          "dateTime": "00:02:00",
+          "value": "2"
+        },
+        {
+          "dateTime": "00:03:00",
+          "value": "2"
+        },
+        {
+          "dateTime": "00:04:00",
+          "value": "1"
+        },
+        {
+          "dateTime": "00:05:00",
+          "value": "1"
+        },
+        {
+          "dateTime": "00:06:00",
+          "value": "1"
+        },
+        {
+          "dateTime": "00:07:00",
+          "value": "1"
+        },
+        {
+          "dateTime": "00:08:00",
+          "value": "1"
+        },
+        {
+          "dateTime": "00:09:00",
+          "value": "1"
+        },
+        {
+          "dateTime": "00:10:00",
+          "value": "1"
+        },
+        {
+          "dateTime": "00:11:00",
+          "value": "1"
+        },
+        {
+          "dateTime": "00:12:00",
+          "value": "1"
+        },
+        {
+          "dateTime": "00:13:00",
+          "value": "1"
+        },
+        {
+          "dateTime": "00:14:00",
+          "value": "1"
+        },
+        {
+          "dateTime": "00:15:00",
+          "value": "1"
+        },
+        {
+          "dateTime": "00:16:00",
+          "value": "1"
+        },
+        {
+          "dateTime": "00:17:00",
+          "value": "1"
+        },
+        {
+          "dateTime": "00:18:00",
+          "value": "2"
+        },
+        {
+          "dateTime": "00:19:00",
+          "value": "3"
+        },
+        {
+          "dateTime": "00:20:00",
+          "value": "1"
+        }
+      ],
+      "minutesAfterWakeup": 0,
+      "minutesAsleep": 15,
+      "minutesAwake": 2,
+      "minutesToFallAsleep": 6,
+      "restlessCount": 3,
+      "restlessDuration": 6,
+      "startTime": "2015-11-27T23:58:00.000",
+      "timeInBed": 23
+    }
+  ],
+  "summary": {
+    "totalMinutesAsleep": 15,
+    "totalSleepRecords": 1,
+    "totalTimeInBed": 23
+  }
+}

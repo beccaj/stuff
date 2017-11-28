@@ -1,0 +1,26 @@
+{
+  "user": 7837326,
+  "data": {
+    "lists": [
+      {"id":95751747,"title":"Work","owner_type":"user","owner_id":7837326,"list_type":"list","public":false,"revision":3141,"created_at":"2014-02-19T22:34:37.381Z","type":"list"}
+    ],
+    "tasks": [
+      {"id":1529646109,"created_at":"2015-12-18T17:43:47.674Z","created_by_id":7837326,"created_by_request_id":"5541b1d86e925e2dd7e5:5D5740DF-4C62-4874-A0E3-A0DD218796AF:A3E61821-DA7F-4CBC-9FDA-968728EF8588:7837326:16DEB650-BFFD-44F2-853E-8D7AF5E7531C","completed":true,"completed_at":"2015-12-30T15:47:52.929Z","completed_by_id":7837326,"starred":false,"list_id":95751747,"revision":2,"title":"Reassign all of my merge requests that should be","type":"task"}
+    ],
+    "reminders": [
+      {"id":75577962,"date":"2015-08-27T14:00:00.000Z","task_id":1529646109,"revision":1,"created_at":"2015-08-21T19:47:32.497Z","updated_at":"2015-08-27T14:00:07.570Z","created_by_request_id":"5541b1d86e925e2dd7e5:5D5740DF-4C62-4874-A0E3-A0DD218796AF:A3E61821-DA7F-4CBC-9FDA-968728EF8588:7837326:2E8204DF-2084-4417-8D69-6D52C891128A","type":"reminder"}
+    ],
+    "subtasks": [
+      {"id":604269413,"task_id":604193853,"completed":false,"created_at":"2014-04-28T21:54:26.047Z","created_by_id":7837326,"revision":0,"title":"When it builds successfully...","type":"subtask"}
+    ],
+    "notes": [
+      {"id":41903183,"revision":1,"content":"","type":"note","task_id":675253746}
+    ],
+    "task_positions": [
+      {"id":95751747,"list_id":95751747,"revision":527,"values":[1496129766,1560884841,1521769349,1525736312,1496128916,1529910304,1363729282,1551061232,1529778740,1547627347,1547023610,1137910678,1473039265,1526141671,1523586842,1521787877,1497546678,1377810688,1400821612,1509921504,1495787426,1292751490,1307884998,1414102959,1260124942,1419652070,1416108037,1383591135,1377808454,1203784001,1295934728,1282967418,1225608139,1351098512,1156806936,1017865058,1233129269,1232675780,1236642997,1254844079,1300732143],"type":"task_position"}
+    ],
+    "subtask_positions": [
+      {"id":1017865058,"task_id":1017865058,"revision":5,"values":[1040794086,1040794176,1065098402,1088901495],"type":"subtask_position"}
+    ]
+  }
+}

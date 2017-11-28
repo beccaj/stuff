@@ -1,0 +1,264 @@
+Kevin McKeown: 00580000001fn0IAAQ
+James Hyde: 00580000003eVpTAAU
+Martin P Taylor: 005C0000003xCS8IAM
+Sarah Taylor: 005C0000004pEQGIA2
+Jan Hantke: 00580000003cVptAAE
+Brande Bradshaw: 00580000003dU9FAAU
+Justin Walker: 00580000003eRn9AAE
+Josh Will: 005C0000003fKByIAM
+Adria Negelow: 005C0000003xEcjIAE
+Jon Tiller: 005C0000003xjRIIAY
+Sally Sanders: 00580000003eRf0AAE
+Kenny Madden: 00580000001h1vxAAA
+Andrew Lamb: 00580000003ebHDAAY
+Aaron Floyd: 005C0000003xV10IAE
+Allison Blasco: 005C0000003zCFPIA2
+Alex Reiss: 00580000001fn3kAAA
+Merrell Ligons: 005C00000040DLIIA2
+Chris Rack: 005C0000003fmQuIAI
+Brittany Oster: 005C0000003fM0YIAU
+Brian Shipbaugh: 005C0000003x717IAA
+Jason Bagby: 00580000001fn3lAAA
+Heather Powell: 00580000003br2WAAQ
+Gary Perez: 005C00000040UGyIAM
+Doug Detlefsen: 00580000001pmKNAAY
+Alan Lai: 005C0000004pH7MIAU
+Marius Holmer: 005C0000003xhDmIAI
+      
+Kevin McKeown: 0
+James Hyde: 512
+Martin P Taylor: 7714408778
+Sarah Taylor: 44
+Jan Hantke: 49
+Brande Bradshaw: (512) 628-8247
+Justin Walker: (512) 628-8257
+Josh Will: (512) 628-8242
+Adria Negelow: (512) 346-7743
+Jon Tiller: 00 44 7872 936 017
+Sally Sanders: (512) 628-8221
+Kenny Madden: (512) 628-8230
+Andrew Lamb: (512) 628-8261
+Aaron Floyd: (512) 628-8229
+Allison Blasco: (512) 628-8291
+Alex Reiss: (512) 628-8206
+Merrell Ligons: x274
+Chris Rack: (630) 665-1143
+Brittany Oster: (512) 628-8255
+Brian Shipbaugh: (512) 628-8200
+Jason Bagby: (512) 628-8209
+Heather Powell: (512) 628-8240
+Gary Perez: (512) 628-8224
+Doug Detlefsen: (925) 455-2028
+Alan Lai: (510) 228-5445
+Marius Holmer: +49 8142 3059084
+
+
+
+
+
+
+
+      create    db/migrate/20130703220512_create_salesperson_calls.rb
+      create    app/models/salesperson_call.rb
+      invoke    test_unit
+      create      test/unit/salesperson_call_test.rb
+      invoke      factory_girl
+      create        test/factories/salesperson_calls.rb   
+
+
+
+
+
+
+
+
+    <span class="inline-controls"><%= salesperson[0].name %></span>
+    <span class="inline-controls"><span class = "<%= salesperson[1] %>" onclick = 'enableToggle()'>Enable</span></span>
+    <span class="inline-controls"><span class = "<%= salesperson[2] %>" onclick = 'enableToggle()'>Disable</span></span><br />    
+
+
+
+      alert "Headlines!"
+      @feedElem.fadeOut =>
+        alert "fade out!!!"
+        @currentIndex = (@currentIndex + 1) % headlines.length
+        @set 'current_headline', headlines[@currentIndex]
+        alert( headlines[@currentIndex])
+        @feedElem.fadeIn()
+
+
+
+class Dashing.Comments extends Dashing.Widget
+  ###
+  @accessor 'description', ->
+    "“#{@get('current_headline')?.description}”"
+  @accessor 'headline', ->
+    "“#{@get('current_headline')?.headline}”"
+  ###
+  ready: ->
+  ### 
+    @currentIndex = 0
+    @feedElem = $(@node).find('.feed-container')
+    @nextHeadline()
+    @startCarousel()
+  ###
+
+  onData: (data) ->
+  ###
+    @currentIndex = 0
+  ###
+
+  ###
+  startCarousel: ->
+    setInterval(@nextHeadline, 8000)
+  ###
+  ###
+  nextHeadline: =>
+    headlines = @get('headlines')
+    if headlines
+      @feedElem.fadeOut =>
+        @currentIndex = (@currentIndex + 1) % headlines.length
+        @set 'current_headline', headlines[@currentIndex]
+        @feedElem.fadeIn()
+  ###
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    $(@node).empty()
+    container = $(@node).parent()
+    width = (Dashing.widget_base_dimensions[0] * container.data("sizex")) + Dashing.widget_margins[0] * 2 * (container.data("sizex") - 1)
+    height = (Dashing.widget_base_dimensions[1] * container.data("sizey"))
+    @graph = new Rickshaw.Graph(
+      element: @node
+      width: width
+      height: height
+      renderer: 'bar'
+      series: data.series
+    )
+
+    format = (x) ->
+      switch x
+        when 0 then "0-19"
+        when 1 then "20-99"
+        when 2 then "100-249"
+        when 3 then "250-499"
+        when 4 then "500-999"
+        when 5 then ">=1000"
+
+
+
+    y_axis = new Rickshaw.Graph.Axis.Y(graph: @graph, tickFormat: Rickshaw.Fixtures.Number.formatKMBT)
+    x_axis = new Rickshaw.Graph.Axis.Time(graph: @graph, tickFormat: Rickshaw.Fixtures.Number.formatKMBT)
+
+      graph: @graph
+      orientation: 'bottom'
+      #element: document.getElementById('x_axis')
+      pixelsPerTick: 200
+      tickFormat: format
+    } )
+
+
+
+
+    #x_axis = new Rickshaw.Graph.Axis.X(graph: @graph, tickFormat: Rickshaw.Fixtures.Number.formatKMBT)
+    #@graph.renderer.unstack = true
+    legend = $(@node)
+
+    hover_func = (series, x, y) ->
+      "<span>HOVER!!!</span>"
+
+    hover_det =   
+      graph: @graph
+      formatter: hover_func
+
+    @graph.render() 
+    #x_axis.render()
+    Hover = Rickshaw.Graph.HoverDetail(hover_det)  
+ 
+ 
+    @set('title', data.line)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    container = $(@node).parent()
+    width = (Dashing.widget_base_dimensions[0] * container.data("sizex")) + Dashing.widget_margins[0] * 2 * (container.data("sizex") - 1)
+    height = (Dashing.widget_base_dimensions[1] * container.data("sizey"))
+    @graph = new Rickshaw.Graph(
+      element: @node
+      width: width
+      height: height
+      renderer: 'bar'
+      series: [
+        {
+        color: "#fff",
+     #   data: [{ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }]
+        data: [{ x: 0, y: 0 }, { x: 1, y: 0 }, {x: 2, y: 0}, {x: 3, y: 0}]
+        },
+
+        {
+          color: "#aaa",
+          data: [{ x: 0, y: 1 }, { x: 1, y: 0 }, {x: 2, y: 0}, {x: 3, y: 0}]
+        }
+      ]
+    )
+
+    y_axis = new Rickshaw.Graph.Axis.Y(graph: @graph, tickFormat: Rickshaw.Fixtures.Number.formatKMBT)
+#    @graph.renderer.unstack = true
+    @graph.render()       
+    @set('line1', "This is")
+    @set('line2', "My Widget")
+
+
+
+    x_axis = new Rickshaw.Graph.Axis.X( {
+      graph: @graph,
+      orientation: 'bottom',
+      element: $(@node),
+      pixelsPerTick: 200,
+      tickFormat: format # Rickshaw.Fixtures.Number.formatKMBT
+
+
+    } )

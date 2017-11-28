@@ -1,0 +1,5 @@
+
+TimeCDT,TemperatureF,Dew PointF,Humidity,Sea Level PressureIn,VisibilityMPH,Wind Direction,Wind SpeedMPH,Gust SpeedMPH,PrecipitationIn,Events,Conditions,WindDirDegrees,DateUTC
+12:51 AM,82.0,73.0,74,29.86,10.0,Variable,4.6,-,N/A,,Clear,0,2015-08-08 05:51:00
+1:51 AM,80.1,72.0,76,29.86,10.0,Variable,6.9,-,N/A,,Clear,0,2015-08-08 06:51:00
+2:51 AM,79.0,73.0,82,29.85,10.0,Variable,4.6,-,N/A,,Clear,0,2015-08-08 07:51:00

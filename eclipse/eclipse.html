@@ -1,0 +1,45 @@
+<link rel="stylesheet" href="/Users/rebeccag/stuff/eclipse/leaflet/leaflet.css" />
+<link rel="stylesheet" href="/Users/rebeccag/stuff/eclipse/eclipse.css" />
+<script src="/Users/rebeccag/stuff/eclipse/leaflet/leaflet.js"></script>
+
+<div id="mapid"></div>
+<script type='text/javascript'>
+  // var mymap = L.map('mapid').setView([51.505, -0.09], 13);
+  var mymap = L.map('mapid').setView([40.0, -95.62333333333333], 5);
+
+  var accessToken = "pk.eyJ1IjoibHVuYXRoZWZseWluZ3R1bmEiLCJhIjoiY2o2NzBnbTV6MDFpYzMydGRvZDhxZWlhdCJ9.PDDhulTEtIu37QoEUa2htA"
+
+
+  L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+      attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+      maxZoom: 18,
+      id: 'mapbox.streets',
+      accessToken: accessToken
+  }).addTo(mymap);
+
+
+  var eclipseCoords = [[44.87, -124.84166666666667], [44.81, -123.205], [44.733333333333334, -121.63333333333334], [44.638333333333335, -120.12], [44.53, -118.65833333333333], [44.406666666666666, -117.24666666666667], [44.27166666666667, -115.88], [44.123333333333335, -114.555], [43.965, -113.27], [43.795, -112.02166666666666], [43.61666666666667, -110.80833333333334], [43.42666666666667, -109.62666666666667], [43.22833333333333, -108.475], [43.02166666666667, -107.35166666666667], [42.80833333333333, -106.25666666666666], [42.585, -105.18666666666667], [42.355, -104.14], [42.11833333333333, -103.11666666666666], [41.875, -102.115], [41.625, -101.135], [41.36833333333333, -100.17333333333333], [41.10666666666667, -99.23], [40.83833333333333, -98.305], [40.565, -97.395], [40.285, -96.50166666666667], [40.0, -95.62333333333333], [39.71, -94.76], [39.415, -93.90833333333333], [39.11666666666667, -93.07], [38.81166666666667, -92.24333333333334], [38.501666666666665, -91.42666666666666], [38.18833333333333, -90.62166666666667], [37.87, -89.82666666666667], [37.54666666666667, -89.04], [37.22, -88.26166666666667], [36.888333333333335, -87.49166666666666], [36.55166666666667, -86.72833333333334], [36.211666666666666, -85.97166666666666], [35.86833333333333, -85.22166666666666], [35.52, -84.47666666666667], [35.166666666666664, -83.735], [34.81, -82.99833333333333], [34.44833333333333, -82.265], [34.083333333333336, -81.535], [33.715, -80.80666666666667], [33.34166666666667, -80.07833333333333], [32.96333333333333, -79.35333333333334], [32.58166666666666, -78.62666666666667], [32.195, -77.9]];
+  var colors = ["#ffffff", "#f5f5ff", "#aaaaff", "#0a0aff", "#0202ff", "#0000ff", "#0606ff", "#1313ff", "#2929ff", "#3c3cff", "#3939ff", "#1f1fff", "#1010ff", "#1010ff", "#1313ff", "#1c1cff", "#2929ff", "#3131ff", "#4040ff", "#5f5fff", "#7777ff", "#8181ff", "#9090ff", "#8383ff", "#7b7bff", "#7d7dff", "#8b8bff", "#8f8fff", "#9292ff", "#adadff", "#b7b7ff", "#b8b8ff", "#9f9fff", "#9898ff", "#9a9aff", "#b6b6ff", "#d7d7ff", "#d5d5ff", "#e9e9ff", "#e2e2ff", "#cacaff", "#d7d7ff", "#dedeff", "#f3f3ff", "#eeeeff", "#e7e7ff", "#e6e6ff", "#f2f2ff", "#b8b8ff"] ;
+
+  L.marker(eclipseCoords[0]).addTo(mymap);
+
+  for(var i = 0; i < eclipseCoords.length; i++) {
+    // alert(eclipseCoords[i]);
+    // L.marker(eclipseCoords[i]).addTo(mymap);
+    var circle = L.circle(eclipseCoords[i], {
+      color: colors[i],
+      fillColor: colors[i],
+      fillOpacity: 0.9,
+      radius: 25000
+    }).addTo(mymap);
+
+    circle.bindPopup("Color: " + colors[i]).openPopup();
+  }
+
+  // var marker = L.marker([51.5, -0.09]).addTo(mymap);
+  // marker.bindPopup("<b>Hello world!</b><br>I am a popup.").openPopup();
+  // var popup = L.popup()
+  //   .setLatLng([51.5, -0.09])
+  //   .setContent("I am a standalone popup.")
+  //   .openOn(mymap);
+</script>

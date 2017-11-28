@@ -1,0 +1,9 @@
+{
+  "errors": [
+    {
+      "errorType": "invalid_client",
+      "message": "Invalid authorization header format. Visit https://dev.fitbit.com/docs/oauth2 for more information on the Fitbit Web API authorization process."
+    }
+  ],
+  "success": false
+}

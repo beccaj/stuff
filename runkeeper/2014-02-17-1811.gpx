@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx
+  version="1.1"
+  creator="RunKeeper - http://www.runkeeper.com"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://www.topografix.com/GPX/1/1"
+  xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd"
+  xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1">
+<trk>
+  <name><![CDATA[Walking 2/17/14 6:11 pm]]></name>
+  <time>2014-02-17T18:11:12Z</time>
+<trkseg>
+<trkpt lat="30.324423000" lon="-97.737042000"><ele>202.4</ele><time>2014-02-17T18:11:12Z</time></trkpt>
+<trkpt lat="30.324572000" lon="-97.737089000"><ele>202.4</ele><time>2014-02-17T18:11:15Z</time></trkpt>
+<trkpt lat="30.324420000" lon="-97.737097000"><ele>202.4</ele><time>2014-02-17T18:11:20Z</time></trkpt>
+<trkpt lat="30.324489000" lon="-97.737027000"><ele>202.4</ele><time>2014-02-17T18:11:21Z</time></trkpt>
+<trkpt lat="30.324573000" lon="-97.737059000"><ele>202.4</ele><time>2014-02-17T18:11:28Z</time></trkpt>
+<trkpt lat="30.324573000" lon="-97.737059000"><ele>202.4</ele><time>2014-02-17T18:11:28Z</time></trkpt>
+</trkseg>
+</trk>
+</gpx>
