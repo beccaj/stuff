@@ -3,12 +3,12 @@ require_relative 'runkeeper_helper'
 
 def get_data(filename) # TODO should be in runkeeper helper?
   file = File.open(filename, "r")
-  file_string = file.read 
-  data = CSV.parse(file_string, {:headers=> true})  
+  file_string = file.read
+  data = CSV.parse(file_string, {:headers=> true})
 end
 
 def write_weather_graph_csv
-  data = get_data("/Users/rebeccag/stuff/run_weather.csv")
+  data = get_data("run_weather.csv")
 
   @categories = data['date'].to_s
   @pace = data['ave_pace'].map {|x| x.to_f}.to_s
@@ -138,7 +138,7 @@ def write_weather_graph_csv
   File.open(filename, "w") do |f|
     f.write(filestring)
     f.close
-  end 
+  end
 end
 
 

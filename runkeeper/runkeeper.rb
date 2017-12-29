@@ -492,7 +492,7 @@ refresh_files # true # uncomment "true" to force a refresh. I usually don't want
 #   })
 
 begin # To include weather, uncomment
-  write_daily_weather("/Users/rebeccag/stuff/run_weather.csv") # I often want this
+  write_daily_weather("run_weather.csv") # I often want this
   write_weather_graph_csv # write_daily_weather before running this. This is to make an awesome graph!
 rescue Exception => e
   puts e
