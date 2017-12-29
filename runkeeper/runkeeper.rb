@@ -1,5 +1,5 @@
 require 'csv'
-require_relative 'weather_utils'
+require_relative '../weather_utils'
 require_relative 'runkeeper_helper'
 require_relative 'runkeeper_chart'
 
